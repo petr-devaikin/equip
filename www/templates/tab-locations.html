@@ -1,0 +1,13 @@
+<ion-view view-title="Locations">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate" ng-repeat="location in locations" type="item-text-wrap">
+        <h2>{{location.name}}</h2>
+
+        <ion-option-button class="button-assertive" ng-click="remove(location)">
+          Delete
+        </ion-option-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

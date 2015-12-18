@@ -1,0 +1,12 @@
+<ion-view view-title="Messages">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="message in messages" type="item-text-wrap" href="#/tab/messages/{{message.id}}">
+        <img ng-src="{{message.face}}">
+        <h2>{{message.name}}</h2>
+        <p>{{message.lastText}}</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
