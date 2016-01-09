@@ -67,7 +67,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
       views: {
-        'tab-chats': {
+        'tab-people': {
           templateUrl: 'templates/chat-detail.html',
           controller: 'ChatDetailCtrl'
         }
@@ -75,14 +75,23 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     })
 
   .state('tab.groups', {
-    url: '/groups',
-    views: {
-      'tab-groups': {
-        templateUrl: 'templates/tab-groups.html',
-        controller: 'GroupsCtrl'
+      url: '/groups',
+      views: {
+        'tab-groups': {
+          templateUrl: 'templates/tab-groups.html',
+          controller: 'GroupsCtrl'
+        }
       }
-    }
-  })
+    })
+    .state('tab.new-group', {
+      url: '/groups/new',
+      views: {
+        'tab-groups': {
+          templateUrl: 'templates/new-group.html',
+          controller: 'NewGroupCtrl'
+        }
+      }
+    })
 
   .state('tab.locations', {
     url: '/locations',

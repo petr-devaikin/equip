@@ -1,9 +1,17 @@
 <ion-view view-title="Groups">
   <ion-content>
     <ion-list>
-      <ion-item class="item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
-        <h2>{{group.name}}</h2>
-        <i class="icon ion-chevron-right icon-accessory"></i>
+      <ion-item class="item-remove-animate item-icon-right" ng-repeat="group in groups" type="item-text-wrap">
+        <h2>{{group.attributes.name}}</h2>
+        <!--i class="icon ion-chevron-right icon-accessory"></i-->
+
+        <ion-option-button class="button-assertive" ng-click="remove(group)">
+          Delete
+        </ion-option-button>
+      </ion-item>
+      <ion-item  class="item-icon-left" type="item-text-wrap" href="#/tab/groups/new" >
+        <h2 style="font-weight: bold;">ADD GROUP</h2>
+        <i class="icon ion-plus"></i>
       </ion-item>
     </ion-list>
   </ion-content>

@@ -49,78 +49,50 @@ angular.module('starter.services', [])
   };
 })
 
-.factory('Groups', function() {
+.factory('GroupService', function() {
   var groupObj = Parse.Object.extend("Group");
   var query = new Parse.Query(groupObj);
 
-  var groups = [];
-
-  query.find({
-    success:function(results) {
-      for (var index = 0; index < results.length; ++index) {
-        var obj = results[index];
-        groups.push({
-          id: obj.id,
-          name: obj.attributes.name
-        });
-      }
-    },
-    error:function(error) {
-      console.log("Error retrieving groups!");
-    }
-  });
-
   return {
     all: function() {
-      return groups;
+      console.log('get groups request sent to server');
+      return query.find();
     },
-    get: function(groupId) {
-      for (var i = 0; i < groups.length; i++) {
-        if (groups[i].id === groupId) {
-          return groups[i];
-        }
-      }
-      return null;
+    add: function(name) {
+      var newGroup = new groupObj();
+      newGroup.set("name", name);
+      console.log('send new group to server');
+      return newGroup.save();
+    },
+    remove: function(group) {
+      console.log('remove group sent to server ' + group.attributes.name);
+      return group.destroy();
     }
   };
 })
 
-.factory('Locations', function() {
+.factory('LocationService', function() {
   var locationObj = Parse.Object.extend("Location");
   var query = new Parse.Query(locationObj);
 
-  var locations = [];
-
-  query.find({
-    success:function(results) {
-      for (var index = 0; index < results.length; ++index) {
-        var obj = results[index];
-        locations.push({
-          id: obj.id,
-          name: obj.attributes.name
-        });
-      }
-    },
-    error:function(error) {
-      console.log("Error retrieving locations!");
+  var getAllQuery = query.find().then(function(data) {
+    var locations = [];
+    for (var index = 0; index < data.length; ++index) {
+      var obj = data[index];
+      locations.push({
+        id: obj.id,
+        name: obj.attributes.name
+      });
     }
+    console.log('locations found and processed');
+    return Parse.Promise.as(locations);
   });
 
 
   return {
-    all: function() {
-      return locations;
-    },
+    all: function() { return getAllQuery; },
     remove: function(location) {
-      locations.splice(locations.indexOf(location), 1);
-    },
-    get: function(locationId) {
-      for (var i = 0; i < locations.length; i++) {
-        if (locations[i].id === locationId) {
-          return locations[i];
-        }
-      }
-      return null;
+      //locations.splice(locations.indexOf(location), 1);
     }
   };
 });

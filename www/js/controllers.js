@@ -20,17 +20,51 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
+  console.log('chat details');
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('GroupsCtrl', function($scope, Groups) {
-  $scope.groups = Groups.all();
+
+.controller('GroupsCtrl', function($scope, GroupService) {
+  function updateGroupList() {
+    GroupService.all().then(function(data) {
+      $scope.groups = data;
+      $scope.$apply();
+      console.log('scope.groups updated');
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    console.log('view entered');
+    updateGroupList();
+  });
+
+  $scope.remove = function(group) {
+    GroupService.remove(group).then(function() {
+      console.log('group destroyed');
+      updateGroupList();
+    });
+  }
+})
+.controller('NewGroupCtrl', function($scope, $state, GroupService) {
+  console.log("new group ctrl");
+  $scope.addItem = function(form) {
+    GroupService.add(form.groupName.$modelValue).then(function() {
+      console.log('new group added');
+      $state.go('tab.groups');
+    });
+  }
 })
 
-.controller('LocationsCtrl', function($scope, Locations) {
-  $scope.locations = Locations.all();
+
+.controller('LocationsCtrl', function($scope, LocationService) {
+  LocationService.all().then(function(data) {
+    $scope.locations = data;
+    $scope.$apply();
+    console.log('scope.locations updated');
+  });
 
   $scope.remove = function(location) {
-    Locations.remove(location);
+    LocationService.remove(location);
   };
 });
