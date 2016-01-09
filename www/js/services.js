@@ -75,24 +75,13 @@ angular.module('starter.services', [])
   var locationObj = Parse.Object.extend("Location");
   var query = new Parse.Query(locationObj);
 
-  var getAllQuery = query.find().then(function(data) {
-    var locations = [];
-    for (var index = 0; index < data.length; ++index) {
-      var obj = data[index];
-      locations.push({
-        id: obj.id,
-        name: obj.attributes.name
-      });
-    }
-    console.log('locations found and processed');
-    return Parse.Promise.as(locations);
-  });
-
-
   return {
-    all: function() { return getAllQuery; },
+    all: function() {
+      console.log('get locations request sent to server');
+      return query.find();
+    },
     remove: function(location) {
-      //locations.splice(locations.indexOf(location), 1);
+
     }
   };
 });

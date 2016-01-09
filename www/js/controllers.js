@@ -58,10 +58,17 @@ angular.module('starter.controllers', [])
 
 
 .controller('LocationsCtrl', function($scope, LocationService) {
-  LocationService.all().then(function(data) {
-    $scope.locations = data;
-    $scope.$apply();
-    console.log('scope.locations updated');
+  function updateLocationList() {
+    LocationService.all().then(function(data) {
+      $scope.locations = data;
+      $scope.$apply();
+      console.log('scope.locations updated');
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    console.log('view entered');
+    updateLocationList();
   });
 
   $scope.remove = function(location) {
