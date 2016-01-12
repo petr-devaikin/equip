@@ -83,6 +83,44 @@ angular.module('starter.controllers', [])
     });
   }
 })
+.controller('GroupDetailCtrl', function($scope, $stateParams, GroupService) {
+  function updateGroupInfo() {
+    GroupService.get($stateParams.groupId).then(function(data) {
+      $scope.group = data;
+      $scope.$apply();
+      console.log('group info received');
+
+      GroupService.usersInGroup(data).then(function(users) {
+        $scope.usersInGroup = users;
+        console.log('people in group received');
+        var ids = users.map(function(u) { return u.id; });
+        GroupService.usersNotInGroup(ids).then(function(otherUsers) {
+          $scope.usersNotInGroup = otherUsers;
+          $scope.$apply();
+          console.log('people not in group received');
+        });
+      });
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateGroupInfo();
+  });
+
+  $scope.addUser = function(user) {
+    if (user !== null) {
+      GroupService.addUser($scope.group, user).then(function() {
+        updateGroupInfo();
+      });
+    }
+  }
+
+  $scope.removeUser = function(user) {
+    GroupService.removeUser($scope.group, user).then(function() {
+      updateGroupInfo();
+    });
+  }
+})
 
 
 .controller('LocationsCtrl', function($scope, LocationService) {

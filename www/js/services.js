@@ -73,23 +73,60 @@ angular.module('starter.services', [])
 })
 
 .factory('GroupService', function() {
-  var groupObj = Parse.Object.extend("Group");
-  var query = new Parse.Query(groupObj);
+  var groupObj = Parse.Object.extend('Group');
+  var userGroupObj = Parse.Object.extend('UserGroup');
+  var userObj = Parse.Object.extend('User');
 
   return {
     all: function() {
       console.log('get groups request sent to server');
+      var query = new Parse.Query(groupObj);
       return query.find();
     },
     add: function(name) {
       var newGroup = new groupObj();
-      newGroup.set("name", name);
+      newGroup.set('name', name);
       console.log('send new group to server');
       return newGroup.save();
     },
     remove: function(group) {
       console.log('remove group sent to server ' + group.attributes.name);
       return group.destroy();
+    },
+    get: function(groupId) {
+      var query = new Parse.Query(groupObj);
+      return query.get(groupId);
+    },
+    usersInGroup: function(group) {
+      var userGroupQuery = new Parse.Query(userGroupObj);
+      userGroupQuery.equalTo('group', group);
+      userGroupQuery.include('user');
+      return userGroupQuery.find().then(function(userGroups) {
+        var users = [];
+        for (var i = 0; i < userGroups.length; i++) {
+          users.push(userGroups[i].get("user"));
+        }
+        return Parse.Promise.as(users);
+      });
+    },
+    usersNotInGroup: function(userInGroupIds) {
+      var userQuery = new Parse.Query(userObj);
+      userQuery.notContainedIn('objectId', userInGroupIds);
+      return userQuery.find();
+    },
+    addUser: function(group, user) {
+      var newUserGroup = new userGroupObj();
+      newUserGroup.set('group', group);
+      newUserGroup.set('user', user);
+      return newUserGroup.save();
+    },
+    removeUser: function(group, user) {
+      var userGroupQuery = new Parse.Query(userGroupObj);
+      userGroupQuery.equalTo('group', group);
+      userGroupQuery.equalTo('user', user);
+      return userGroupQuery.first().then(function(userGroup) {
+        return userGroup.destroy();
+      });
     }
   };
 })

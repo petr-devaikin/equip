@@ -101,6 +101,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
       }
     })
+    .state('tab.group-detail', {
+      url: '/groups/:groupId',
+      views: {
+        'tab-groups': {
+          templateUrl: 'templates/group-detail.html',
+          controller: 'GroupDetailCtrl'
+        }
+      }
+    })
 
   .state('tab.locations', {
     url: '/locations',
@@ -117,6 +126,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         'tab-locations': {
           templateUrl: 'templates/new-location.html',
           controller: 'NewLocationCtrl'
+        }
+      }
+    })
+    .state('tab.location-detail', {
+      url: '/locations/:locationId',
+      views: {
+        'tab-locations': {
+          templateUrl: 'templates/location-detail.html',
+          controller: 'LocationDetailCtrl'
         }
       }
     })
