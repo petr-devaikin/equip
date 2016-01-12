@@ -133,12 +133,17 @@ angular.module('starter.services', [])
 
 .factory('LocationService', function() {
   var locationObj = Parse.Object.extend("Location");
-  var query = new Parse.Query(locationObj);
+  var userObj = Parse.Object.extend('User');
 
   return {
     all: function() {
+      var query = new Parse.Query(locationObj);
       console.log('get locations request sent to server');
       return query.find();
+    },
+    get: function(locationId) {
+      var query = new Parse.Query(locationObj);
+      return query.get(locationId);
     },
     add: function(name) {
       var newLocation = new locationObj();
@@ -149,6 +154,11 @@ angular.module('starter.services', [])
     remove: function(location) {
       console.log('remove location sent to server ' + location.attributes.name);
       return location.destroy();
+    },
+    usersAtLocation: function(location) {
+      var query = new Parse.Query(userObj);
+      query.equalTo('lastLocation', location);
+      return query.find();
     }
   };
 });

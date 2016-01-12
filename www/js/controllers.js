@@ -150,4 +150,23 @@ angular.module('starter.controllers', [])
       $state.go('tab.locations');
     });
   }
+})
+.controller('LocationDetailCtrl', function($scope, $stateParams, LocationService) {
+  function updateLocationInfo() {
+    LocationService.get($stateParams.locationId).then(function(data) {
+      $scope.location = data;
+      $scope.$apply();
+      console.log('location info received');
+
+      LocationService.usersAtLocation(data).then(function(users) {
+        $scope.users = users;
+        $scope.$apply();
+        console.log('people at location received');
+      });
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateLocationInfo();
+  });
 });
