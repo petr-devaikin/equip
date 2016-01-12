@@ -25,6 +25,36 @@ angular.module('starter.controllers', [])
 })
 
 
+.controller('PeopleCtrl', function($scope, PeopleService) {
+  function updatePeopleList() {
+    PeopleService.all().then(function(data) {
+      $scope.people = data;
+      $scope.$apply();
+      console.log('scope.people updated');
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updatePeopleList();
+  });
+
+  $scope.remove = function(person) {
+    PeopleService.remove(person).then(function() {
+      console.log('person destroyed');
+      updatePeopleList();
+    });
+  }
+})
+.controller('NewUserCtrl', function($scope, $state, PeopleService) {
+  $scope.addItem = function(form) {
+    PeopleService.add(form.username.$modelValue, form.password.$modelValue).then(function() {
+      console.log('new user added');
+      $state.go('tab.people');
+    });
+  }
+})
+
+
 .controller('GroupsCtrl', function($scope, GroupService) {
   function updateGroupList() {
     GroupService.all().then(function(data) {
@@ -35,7 +65,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    console.log('view entered');
     updateGroupList();
   });
 
@@ -47,7 +76,6 @@ angular.module('starter.controllers', [])
   }
 })
 .controller('NewGroupCtrl', function($scope, $state, GroupService) {
-  console.log("new group ctrl");
   $scope.addItem = function(form) {
     GroupService.add(form.groupName.$modelValue).then(function() {
       console.log('new group added');
@@ -67,11 +95,21 @@ angular.module('starter.controllers', [])
   }
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    console.log('view entered');
     updateLocationList();
   });
 
   $scope.remove = function(location) {
-    LocationService.remove(location);
-  };
+    LocationService.remove(location).then(function() {
+      console.log('location destroyed');
+      updateLocationList();
+    });
+  }
+})
+.controller('NewLocationCtrl', function($scope, $state, LocationService) {
+  $scope.addItem = function(form) {
+    LocationService.add(form.locationName.$modelValue).then(function() {
+      console.log('new location added');
+      $state.go('tab.locations');
+    });
+  }
 });

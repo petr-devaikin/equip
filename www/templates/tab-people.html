@@ -1,15 +1,18 @@
 <ion-view view-title="People">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/chats/{{chat.id}}">
-        <img ng-src="{{chat.face}}">
-        <h2>{{chat.name}}</h2>
-        <p>{{chat.lastText}}</p>
+      <ion-item class="item-remove-animate item-icon-right" ng-repeat="user in people" type="item-text-wrap" href="#/tab/people/{{user.id}}">
+        <h2>{{user.attributes.username}}</h2>
+        <p>Last location: BAR</p>
         <i class="icon ion-chevron-right icon-accessory"></i>
 
-        <ion-option-button class="button-assertive" ng-click="remove(chat)">
+        <ion-option-button class="button-assertive" ng-click="remove(user)">
           Delete
         </ion-option-button>
+      </ion-item>
+      <ion-item  class="item-icon-left" type="item-text-wrap" href="#/tab/people/new" >
+        <h2 style="font-weight: bold;">ADD USER</h2>
+        <i class="icon ion-plus"></i>
       </ion-item>
     </ion-list>
   </ion-content>

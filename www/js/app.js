@@ -64,6 +64,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
       }
     })
+  .state('tab.new-user', {
+      url: '/people/new',
+      views: {
+        'tab-people': {
+          templateUrl: 'templates/new-user.html',
+          controller: 'NewUserCtrl'
+        }
+      }
+    })
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
       views: {
@@ -101,7 +110,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         controller: 'LocationsCtrl'
       }
     }
-  });
+  })
+    .state('tab.new-location', {
+      url: '/locations/new',
+      views: {
+        'tab-locations': {
+          templateUrl: 'templates/new-location.html',
+          controller: 'NewLocationCtrl'
+        }
+      }
+    })
+  ;
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/messages');

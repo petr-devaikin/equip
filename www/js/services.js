@@ -49,6 +49,29 @@ angular.module('starter.services', [])
   };
 })
 
+.factory('PeopleService', function() {
+  var userObj = Parse.Object.extend("User");
+  var query = new Parse.Query(userObj);
+
+  return {
+    all: function() {
+      console.log('get people request sent to server');
+      return query.find();
+    },
+    add: function(name, password) {
+      var newUser = new userObj();
+      newUser.set("username", name);
+      newUser.set("password", password);
+      console.log('send new user to server');
+      return newUser.save();
+    },
+    remove: function(user) {
+      console.log('remove user sent to server ' + user.attributes.name);
+      return user.destroy();
+    }
+  };
+})
+
 .factory('GroupService', function() {
   var groupObj = Parse.Object.extend("Group");
   var query = new Parse.Query(groupObj);
@@ -80,8 +103,15 @@ angular.module('starter.services', [])
       console.log('get locations request sent to server');
       return query.find();
     },
+    add: function(name) {
+      var newLocation = new locationObj();
+      newLocation.set("name", name);
+      console.log('send new location to server');
+      return newLocation.save();
+    },
     remove: function(location) {
-
+      console.log('remove location sent to server ' + location.attributes.name);
+      return location.destroy();
     }
   };
 });
