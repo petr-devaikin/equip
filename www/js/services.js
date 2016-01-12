@@ -51,10 +51,11 @@ angular.module('starter.services', [])
 
 .factory('PeopleService', function() {
   var userObj = Parse.Object.extend("User");
-  var query = new Parse.Query(userObj);
 
   return {
     all: function() {
+      var query = new Parse.Query(userObj);
+      query.include('lastLocation');
       console.log('get people request sent to server');
       return query.find();
     },

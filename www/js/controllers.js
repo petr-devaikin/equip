@@ -30,6 +30,7 @@ angular.module('starter.controllers', [])
     PeopleService.all().then(function(data) {
       $scope.people = data;
       $scope.$apply();
+        console.log(data[0].attributes);
       console.log('scope.people updated');
     });
   }
