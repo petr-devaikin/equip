@@ -8,7 +8,7 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  $scope.messages = MessageService.all();
+  $scope.messages = MessageService.chats();
   $scope.remove = function(chat) {
     MessageService.remove(chat);
   };
@@ -48,14 +48,39 @@ angular.module('starter.controllers', [])
     });
   }
 })
-.controller('MsgAllChatCtrl', function($scope, $state, MessageService) {
+.controller('MsgAllChatCtrl', function($scope, MessageService) {
   $scope.destination = 'All';
+  $scope.sendMsgHref = '#/tab/messages/broadcast';
+
+  MessageService.messagesToAll().then(function(messages) {
+    $scope.messages = messages;
+    $scope.$apply;
+  });
 })
-.controller('MsgAllChatCtrl', function($scope, $state, MessageService) {
-  $scope.destination = 'User';
+.controller('MsgUserChatCtrl', function($scope, $stateParams, MessageService, PeopleService) {
+  PeopleService.get($stateParams.userId).then(function(user) {
+    $scope.destObject = user;
+    $scope.sendMsgHref = '#/tab';
+    $scope.destination = user.attributes.username;
+    $scope.$apply();
+
+    MessageService.messagesToUser(user).then(function(messages) {
+      $scope.messages = messages;
+      $scope.$apply;
+    });
+  });
 })
-.controller('MsgGroupChatCtrl', function($scope, $state, MessageService) {
-  $scope.destination = 'Group';
+.controller('MsgGroupChatCtrl', function($scope, $stateParams, MessageService, GroupService) {
+  GroupService.get($stateParams.groupId).then(function(group) {
+    $scope.destObject = group;
+    $scope.destination = group.attributes.name;
+    $scope.$apply();
+
+    MessageService.messagesToGroup(group).then(function(messages) {
+      $scope.messages = messages;
+      $scope.$apply;
+    });
+  })
 })
 
 
@@ -100,7 +125,7 @@ angular.module('starter.controllers', [])
     $scope.destObject = user;
     $scope.destination = user.attributes.username;
     $scope.$apply();
-  })
+  });
 
   $scope.send = function(user) {
     MessageService.sendToUser(user).then(function() {

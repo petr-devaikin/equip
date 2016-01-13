@@ -32,8 +32,17 @@ angular.module('starter.services', [])
   }];
 
   return {
-    all: function() {
+    chats: function() {
       return chats;
+    },
+    messagesToAll: function() {
+      return Parse.Promise.as([]);
+    },
+    messagesToUser: function(user) {
+      return Parse.Promise.as([]);
+    },
+    messagesToGroup: function(group) {
+      return Parse.Promise.as([]);
     },
     sendToAll: function(data) {
       return Parse.Promise.as('1');

@@ -1,0 +1,13 @@
+<ion-view view-title="Chat with {{destination}}">
+  <ion-content has-header="true">
+    <div class="padding">
+      <ion-button class="button button-block button-positive" href="{{sendMsgHref}}">
+        Send Messagre
+      </ion-button>
+    </div>
+    <ion-list>
+      <ion-item class="" ng-repeat="message in messages" type="item-text-wrap">
+        <h2>{{message.attributes.createdAt}}</h2>
+      </ion-item>
+  </ion-content>
+</ion-view>
