@@ -1,10 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('MessagesCtrl', function($scope, Chats) {
-  $scope.messages = Chats.all();
-})
-
-.controller('PeopleCtrl', function($scope, Chats) {
+.controller('MessagesCtrl', function($scope, MessageService) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -12,16 +8,54 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-
-  $scope.chats = Chats.all();
+  $scope.messages = MessageService.all();
   $scope.remove = function(chat) {
-    Chats.remove(chat);
+    MessageService.remove(chat);
   };
 })
+.controller('MessageDestCtrl', function($scope, $state, PeopleService, GroupService) {
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    PeopleService.all().then(function(data) {
+      $scope.people = data;
+      $scope.$apply();
+    });
+    GroupService.all().then(function(data) {
+      $scope.groups = data;
+      $scope.$apply();
+    });
+  });
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  console.log('chat details');
-  $scope.chat = Chats.get($stateParams.chatId);
+  $scope.toGroup = function(group) {
+    if (group !== null)
+      $state.go('tab.group-message', {groupId: group.id});
+  }
+
+  $scope.toUser = function(user) {
+    if (user !== null)
+      $state.go('tab.user-message', {userId: user.id});
+  }
+
+  $scope.toAll = function() {
+    $state.go('tab.broadcast');
+  }
+})
+.controller('BroadcastCtrl', function($scope, $state, MessageService) {
+  $scope.destination = 'All';
+
+  $scope.send = function() {
+    MessageService.sendToAll().then(function(msgId) {
+      $state.go('tab.messages-all-chat');
+    });
+  }
+})
+.controller('MsgAllChatCtrl', function($scope, $state, MessageService) {
+  $scope.destination = 'All';
+})
+.controller('MsgAllChatCtrl', function($scope, $state, MessageService) {
+  $scope.destination = 'User';
+})
+.controller('MsgGroupChatCtrl', function($scope, $state, MessageService) {
+  $scope.destination = 'Group';
 })
 
 
@@ -30,7 +64,6 @@ angular.module('starter.controllers', [])
     PeopleService.all().then(function(data) {
       $scope.people = data;
       $scope.$apply();
-        console.log(data[0].attributes);
       console.log('scope.people updated');
     });
   }
@@ -51,6 +84,27 @@ angular.module('starter.controllers', [])
     PeopleService.add(form.username.$modelValue, form.password.$modelValue).then(function() {
       console.log('new user added');
       $state.go('tab.people');
+    });
+  }
+})
+.controller('UserDetailCtrl', function($scope, $stateParams, PeopleService) {
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    PeopleService.get($stateParams.userId).then(function(user) {
+      $scope.user = user;
+      $scope.$apply();
+    })
+  });
+})
+.controller('UserMsgCtrl', function($scope, $state, $stateParams, PeopleService, MessageService) {
+  PeopleService.get($stateParams.userId).then(function(user) {
+    $scope.destObject = user;
+    $scope.destination = user.attributes.username;
+    $scope.$apply();
+  })
+
+  $scope.send = function(user) {
+    MessageService.sendToUser(user).then(function() {
+      $state.go('tab.messages-user-chat', {userId: user.id});
     });
   }
 })
@@ -119,6 +173,19 @@ angular.module('starter.controllers', [])
   $scope.removeUser = function(user) {
     GroupService.removeUser($scope.group, user).then(function() {
       updateGroupInfo();
+    });
+  }
+})
+.controller('GroupMsgCtrl', function($scope, $state, $stateParams, GroupService, MessageService) {
+  GroupService.get($stateParams.groupId).then(function(group) {
+    $scope.destObject = group;
+    $scope.destination = group.attributes.name;
+    $scope.$apply();
+  })
+
+  $scope.send = function(group) {
+    MessageService.sendToGroup(group).then(function() {
+      $state.go('tab.messages-group-chat', {groupId: group.id});
     });
   }
 })

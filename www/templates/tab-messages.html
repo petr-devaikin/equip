@@ -1,10 +1,13 @@
 <ion-view view-title="Messages">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="message in messages" type="item-text-wrap" href="#/tab/messages/{{message.id}}">
-        <img ng-src="{{message.face}}">
+      <div class="padding">
+        <a class="button button-block button-positive" href="#/tab/messages/dest">
+          New Message
+        </a>
+      </div>
+      <ion-item class="iitem-icon-right" ng-repeat="message in messages" type="item-text-wrap" href="#/tab/messages/{{message.id}}">
         <h2>{{message.name}}</h2>
-        <p>{{message.lastText}}</p>
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>
     </ion-list>

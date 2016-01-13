@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('Chats', function() {
+.factory('MessageService', function() {
   // Might use a resource here that returns a JSON array
 
   // Some fake testing data
@@ -35,16 +35,14 @@ angular.module('starter.services', [])
     all: function() {
       return chats;
     },
-    remove: function(chat) {
-      chats.splice(chats.indexOf(chat), 1);
+    sendToAll: function(data) {
+      return Parse.Promise.as('1');
     },
-    get: function(chatId) {
-      for (var i = 0; i < chats.length; i++) {
-        if (chats[i].id === parseInt(chatId)) {
-          return chats[i];
-        }
-      }
-      return null;
+    sendToUser: function(userId, data) {
+      return Parse.Promise.as('2');
+    },
+    sendToGroup: function(groupId, data) {
+      return Parse.Promise.as('3');
     }
   };
 })
@@ -58,6 +56,11 @@ angular.module('starter.services', [])
       query.include('lastLocation');
       console.log('get people request sent to server');
       return query.find();
+    },
+    get: function(userId) {
+      var query = new Parse.Query(userObj);
+      query.include('lastLocation');
+      return query.get(userId);
     },
     add: function(name, password) {
       var newUser = new userObj();
