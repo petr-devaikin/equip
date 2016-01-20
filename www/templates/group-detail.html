@@ -2,32 +2,15 @@
   <ion-content has-header="true">
     <div class="padding">
       <ion-button class="button button-block button-positive" ng-click="addItem(form)">
-        Send Message To Group
+        Send Message To Team
       </ion-button>
     </div>
     <ion-list>
       <div class="item item-divider">
-        Group Members
+        Team Members
       </div>
-      <ion-item class="item-remove-animate" ng-repeat="user in usersInGroup" type="item-text-wrap">
+      <ion-item ng-repeat="user in usersInGroup" type="item-text-wrap">
         <h2>{{user.attributes.username}}</h2>
-
-        <ion-option-button class="button-assertive" ng-click="removeUser(user)">
-          Delete From Group
-        </ion-option-button>
-      </ion-item>
-
-      <div class="item item-divider">
-        Add User to Group
-      </div>
-      <ion-item class="item item-input item-select">
-        <div class="input-label">
-          Select user
-        </div>
-        <select ng-options="user as user.attributes.username for user in usersNotInGroup" ng-model="newUser" ng-change="addUser(newUser)">
-        </select>
-      </ion-item>
-
     </div>
   </ion-content>
 </ion-view>

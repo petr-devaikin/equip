@@ -66,88 +66,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
-    .state('tab.message-dest', {
-      url: '/messages/dest',
-      views: {
-        'tab-messages': {
-          templateUrl: 'templates/message-dest.html',
-          controller: 'MessageDestCtrl'
-        }
-      }
-    })
-    .state('tab.broadcast', {
-      url: '/messages/broadcast',
-      views: {
-        'tab-messages': {
-          templateUrl: 'templates/record-message.html',
-          controller: 'BroadcastCtrl'
-        }
-      }
-    })
-    .state('tab.messages-all-chat', {
-      url: '/messages/all/',
-      views: {
-        'tab-messages': {
-          templateUrl: 'templates/chat.html',
-          controller: 'MsgAllChatCtrl'
-        }
-      }
-    })
-    .state('tab.messages-user-chat', {
-      url: '/messages/user/:userId',
-      views: {
-        'tab-messages': {
-          templateUrl: 'templates/chat.html',
-          controller: 'MsgUserChatCtrl'
-        }
-      }
-    })
-    .state('tab.messages-group-chat', {
-      url: '/messages/group/:groupId',
-      views: {
-        'tab-messages': {
-          templateUrl: 'templates/chat.html',
-          controller: 'MsgGroupChatCtrl'
-        }
-      }
-    })
-
-  .state('tab.people', {
-      url: '/people',
-      views: {
-        'tab-people': {
-          templateUrl: 'templates/tab-people.html',
-          controller: 'PeopleCtrl'
-        }
-      }
-    })
-    .state('tab.new-user', {
-      url: '/people/new',
-      views: {
-        'tab-people': {
-          templateUrl: 'templates/new-user.html',
-          controller: 'NewUserCtrl'
-        }
-      }
-    })
-    .state('tab.user-detail', {
-      url: '/people/:userId',
-      views: {
-        'tab-people': {
-          templateUrl: 'templates/user-detail.html',
-          controller: 'UserDetailCtrl'
-        }
-      }
-    })
-    .state('tab.user-message', {
-      url: '/people/:userId/message',
-      views: {
-        'tab-people': {
-          templateUrl: 'templates/record-message.html',
-          controller: 'UserMsgCtrl'
-        }
-      }
-    })
 
   .state('tab.groups', {
       url: '/groups',
@@ -158,30 +76,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
       }
     })
-    .state('tab.new-group', {
-      url: '/groups/new',
-      views: {
-        'tab-groups': {
-          templateUrl: 'templates/new-group.html',
-          controller: 'NewGroupCtrl'
-        }
-      }
-    })
     .state('tab.group-detail', {
       url: '/groups/:groupId',
       views: {
         'tab-groups': {
           templateUrl: 'templates/group-detail.html',
           controller: 'GroupDetailCtrl'
-        }
-      }
-    })
-    .state('tab.group-message', {
-      url: '/groups/:groupId/message',
-      views: {
-        'tab-groups': {
-          templateUrl: 'templates/record-message.html',
-          controller: 'GroupMsgCtrl'
         }
       }
     })
@@ -195,15 +95,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
-    .state('tab.new-location', {
-      url: '/locations/new',
-      views: {
-        'tab-locations': {
-          templateUrl: 'templates/new-location.html',
-          controller: 'NewLocationCtrl'
-        }
-      }
-    })
     .state('tab.location-detail', {
       url: '/locations/:locationId',
       views: {

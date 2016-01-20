@@ -9,10 +9,16 @@
           Delete
         </ion-option-button>
       </ion-item>
-      <ion-item  class="item-icon-left" type="item-text-wrap" href="#/tab/locations/new" >
-        <h2 style="font-weight: bold;">ADD LOCATION</h2>
-        <i class="icon ion-plus"></i>
-      </ion-item>
+
+      <form name="form" ng-model="form">
+        <ion-item class="item-input-inset">
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Name" name="locationName" ng-model="locationName">
+          </label>
+          <button class="button button-small button-positive icon ion-plus" ng-click="addLocation(form)">
+          </button>
+        </ion-item>
+      </form>
     </ion-list>
   </ion-content>
 </ion-view>

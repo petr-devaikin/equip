@@ -127,6 +127,7 @@ angular.module('starter.controllers', [])
     });
   }
 })
+/*
 .controller('NewUserCtrl', function($scope, $state, PeopleService) {
   $scope.addItem = function(form) {
     PeopleService.add(form.username.$modelValue, form.password.$modelValue).then(function() {
@@ -143,6 +144,7 @@ angular.module('starter.controllers', [])
     })
   });
 })
+
 .controller('UserMsgCtrl', function($scope, $state, $stateParams, PeopleService, MessageService) {
   PeopleService.get($stateParams.userId).then(function(user) {
     $scope.destObject = user;
@@ -156,6 +158,7 @@ angular.module('starter.controllers', [])
     });
   }
 })
+*/
 
 
 .controller('GroupsCtrl', function($scope, GroupService) {
@@ -177,12 +180,10 @@ angular.module('starter.controllers', [])
       updateGroupList();
     });
   }
-})
-.controller('NewGroupCtrl', function($scope, $state, GroupService) {
-  $scope.addItem = function(form) {
+
+  $scope.addGroup = function(form) {
     GroupService.add(form.groupName.$modelValue).then(function() {
-      console.log('new group added');
-      $state.go('tab.groups');
+      updateGroupList();
     });
   }
 })
@@ -191,17 +192,10 @@ angular.module('starter.controllers', [])
     GroupService.get($stateParams.groupId).then(function(data) {
       $scope.group = data;
       $scope.$apply();
-      console.log('group info received');
 
       GroupService.usersInGroup(data).then(function(users) {
         $scope.usersInGroup = users;
-        console.log('people in group received');
         var ids = users.map(function(u) { return u.id; });
-        GroupService.usersNotInGroup(ids).then(function(otherUsers) {
-          $scope.usersNotInGroup = otherUsers;
-          $scope.$apply();
-          console.log('people not in group received');
-        });
       });
     });
   }
@@ -209,35 +203,7 @@ angular.module('starter.controllers', [])
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateGroupInfo();
   });
-
-  $scope.addUser = function(user) {
-    if (user !== null) {
-      GroupService.addUser($scope.group, user).then(function() {
-        updateGroupInfo();
-      });
-    }
-  }
-
-  $scope.removeUser = function(user) {
-    GroupService.removeUser($scope.group, user).then(function() {
-      updateGroupInfo();
-    });
-  }
 })
-.controller('GroupMsgCtrl', function($scope, $state, $stateParams, GroupService, MessageService) {
-  GroupService.get($stateParams.groupId).then(function(group) {
-    $scope.destObject = group;
-    $scope.destination = group.attributes.name;
-    $scope.$apply();
-  })
-
-  $scope.send = function(group) {
-    MessageService.sendToGroup(group).then(function() {
-      $state.go('tab.messages-group-chat', {groupId: group.id});
-    });
-  }
-})
-
 
 .controller('LocationsCtrl', function($scope, LocationService) {
   function updateLocationList() {
@@ -254,7 +220,12 @@ angular.module('starter.controllers', [])
 
   $scope.remove = function(location) {
     LocationService.remove(location).then(function() {
-      console.log('location destroyed');
+      updateLocationList();
+    });
+  }
+
+  $scope.addLocation = function(form) {
+    LocationService.add(form.locationName.$modelValue).then(function() {
       updateLocationList();
     });
   }
