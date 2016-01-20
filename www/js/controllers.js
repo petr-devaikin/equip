@@ -1,13 +1,36 @@
 angular.module('starter.controllers', [])
 
+.controller('LoginCtrl', function($scope, $state) {
+  $scope.login = function(form) {
+    if (form.phoneEmail.$modelValue == '123') {
+      $state.go('eventDetails');
+    }
+    else {
+      $state.go('tab.messages');
+    }
+  }
+})
+
+.controller('EventDetailsCtrl', function($scope, $state, PeopleService) {
+  function updatePeopleList() {
+    PeopleService.all().then(function(data) {
+      $scope.people = data;
+      $scope.$apply();
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updatePeopleList();
+  });
+
+  $scope.addUser = function(form) {
+    PeopleService.add(form.phoneEmail.$modelValue, '123').then(function() {
+      updatePeopleList();
+    });
+  }
+})
+
 .controller('MessagesCtrl', function($scope, MessageService) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
   $scope.messages = MessageService.chats();
   $scope.remove = function(chat) {
     MessageService.remove(chat);
