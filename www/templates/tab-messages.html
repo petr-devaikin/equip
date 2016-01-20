@@ -1,14 +1,21 @@
 <ion-view view-title="Messages">
   <ion-content>
     <div class="padding">
-      <a class="button button-block button-positive" href="#/tab/messages/dest">
-        New Message
-      </a>
+      <button class="button button-block button-positive" ng-click="sendToAll()">
+        New Message to All
+      </button>
     </div>
     <ion-list>
-      <ion-item class="item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="chat.url">
-        <h2>{{chat.name}}</h2>
-        <i class="icon ion-chevron-right icon-accessory"></i>
+      <ion-item ng-repeat="message in messages">
+        <h2 ng-show="message.attributes.toGroup">GROUP: {{ message.attributes.toGroup.attributes.name }}</h2>
+        <h2 ng-show="message.attributes.toLocation">LOCATION: {{ message.attributes.toLocation.attributes.name }}</h2>
+        <h2 ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined">TO ALL</h2>
+        <p>
+          @{{ message.attributes.fromUser.attributes.username }}
+          at
+          {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes() + ":" + message.attributes.createdAt.getUTCSeconds(); }}
+          {{ message.attributes.createdAt.getUTCFullYear() +"/"+ (message.attributes.createdAt.getUTCMonth()+1) +"/"+ message.attributes.createdAt.getUTCDate() }}
+        </p>
       </ion-item>
     </ion-list>
   </ion-content>

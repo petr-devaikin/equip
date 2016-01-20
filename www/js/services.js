@@ -1,57 +1,44 @@
 angular.module('starter.services', [])
 
 .factory('MessageService', function() {
-  // Might use a resource here that returns a JSON array
-
-  // Some fake testing data
-  var chats = [{
-    id: 0,
-    name: 'Ben Sparrow',
-    lastText: 'You on your way?',
-    face: 'img/ben.png'
-  }, {
-    id: 1,
-    name: 'Max Lynx',
-    lastText: 'Hey, it\'s me',
-    face: 'img/max.png'
-  }, {
-    id: 2,
-    name: 'Adam Bradleyson',
-    lastText: 'I should buy a boat',
-    face: 'img/adam.jpg'
-  }, {
-    id: 3,
-    name: 'Perry Governor',
-    lastText: 'Look at my mukluks!',
-    face: 'img/perry.png'
-  }, {
-    id: 4,
-    name: 'Mike Harrington',
-    lastText: 'This is wicked good ice cream.',
-    face: 'img/mike.png'
-  }];
+  var msgObj = Parse.Object.extend("Message");
 
   return {
-    chats: function() {
-      return chats;
-    },
-    messagesToAll: function() {
-      return Parse.Promise.as([]);
-    },
-    messagesToUser: function(user) {
-      return Parse.Promise.as([]);
-    },
-    messagesToGroup: function(group) {
-      return Parse.Promise.as([]);
+    all: function() {
+      var query = new Parse.Query(msgObj);
+      query.include('fromUser');
+      query.include('toGroup');
+      query.include('toLocation');
+      query.descending('createdAt');
+      console.log('get messages request sent to server');
+      return query.find();
     },
     sendToAll: function(data) {
-      return Parse.Promise.as('1');
+      var newMsg = new msgObj();
+      newMsg.set('fromUser', Parse.User.current());
+      return newMsg.save();
     },
-    sendToUser: function(userId, data) {
-      return Parse.Promise.as('2');
+    sendToGroup: function(group, data) {
+      var newMsg = new msgObj();
+      newMsg.set('fromUser', Parse.User.current());
+      newMsg.set('toGroup', group);
+      return newMsg.save();
     },
-    sendToGroup: function(groupId, data) {
-      return Parse.Promise.as('3');
+    sendToLocation: function(location, data) {
+      var newMsg = new msgObj();
+      newMsg.set('fromUser', Parse.User.current());
+      newMsg.set('toLocation', location);
+      return newMsg.save();
+    }
+  };
+})
+
+.factory('AuthService', function() {
+  var userObj = Parse.Object.extend("User");
+
+  return {
+    signIn: function(login, password) {
+      return Parse.User.logIn(login, password);
     }
   };
 })

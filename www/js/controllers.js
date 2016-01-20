@@ -1,13 +1,19 @@
 angular.module('starter.controllers', [])
 
-.controller('LoginCtrl', function($scope, $state) {
+.controller('LoginCtrl', function($scope, $state, AuthService) {
   $scope.login = function(form) {
-    if (form.phoneEmail.$modelValue == '123') {
-      $state.go('eventDetails');
-    }
-    else {
-      $state.go('tab.messages');
-    }
+    AuthService.signIn(form.phoneEmail.$modelValue, form.password.$modelValue)
+      .done(function(user) {
+        if (user.attributes.username == 'admin') {
+          $state.go('eventDetails');
+        }
+        else {
+          $state.go('tab.messages');
+        }
+      })
+      .fail(function(error) {
+        console.log('Auth error');
+      });
   }
 })
 
@@ -31,134 +37,38 @@ angular.module('starter.controllers', [])
 })
 
 .controller('MessagesCtrl', function($scope, MessageService) {
-  $scope.messages = MessageService.chats();
-  $scope.remove = function(chat) {
-    MessageService.remove(chat);
-  };
-})
-.controller('MessageDestCtrl', function($scope, $state, PeopleService, GroupService) {
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    PeopleService.all().then(function(data) {
-      $scope.people = data;
+  function updateMessageList() {
+    MessageService.all().then(function(data) {
+      $scope.messages = data;
       $scope.$apply();
-    });
-    GroupService.all().then(function(data) {
-      $scope.groups = data;
-      $scope.$apply();
-    });
-  });
-
-  $scope.toGroup = function(group) {
-    if (group !== null)
-      $state.go('tab.group-message', {groupId: group.id});
-  }
-
-  $scope.toUser = function(user) {
-    if (user !== null)
-      $state.go('tab.user-message', {userId: user.id});
-  }
-
-  $scope.toAll = function() {
-    $state.go('tab.broadcast');
-  }
-})
-.controller('BroadcastCtrl', function($scope, $state, MessageService) {
-  $scope.destination = 'All';
-
-  $scope.send = function() {
-    MessageService.sendToAll().then(function(msgId) {
-      $state.go('tab.messages-all-chat');
-    });
-  }
-})
-.controller('MsgAllChatCtrl', function($scope, MessageService) {
-  $scope.destination = 'All';
-  $scope.sendMsgHref = '#/tab/messages/broadcast';
-
-  MessageService.messagesToAll().then(function(messages) {
-    $scope.messages = messages;
-    $scope.$apply;
-  });
-})
-.controller('MsgUserChatCtrl', function($scope, $stateParams, MessageService, PeopleService) {
-  PeopleService.get($stateParams.userId).then(function(user) {
-    $scope.destObject = user;
-    $scope.sendMsgHref = '#/tab';
-    $scope.destination = user.attributes.username;
-    $scope.$apply();
-
-    MessageService.messagesToUser(user).then(function(messages) {
-      $scope.messages = messages;
-      $scope.$apply;
-    });
-  });
-})
-.controller('MsgGroupChatCtrl', function($scope, $stateParams, MessageService, GroupService) {
-  GroupService.get($stateParams.groupId).then(function(group) {
-    $scope.destObject = group;
-    $scope.destination = group.attributes.name;
-    $scope.$apply();
-
-    MessageService.messagesToGroup(group).then(function(messages) {
-      $scope.messages = messages;
-      $scope.$apply;
-    });
-  })
-})
-
-
-.controller('PeopleCtrl', function($scope, PeopleService) {
-  function updatePeopleList() {
-    PeopleService.all().then(function(data) {
-      $scope.people = data;
-      $scope.$apply();
-      console.log('scope.people updated');
     });
   }
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updatePeopleList();
+    updateMessageList();
   });
 
-  $scope.remove = function(person) {
-    PeopleService.remove(person).then(function() {
-      console.log('person destroyed');
-      updatePeopleList();
-    });
+  $scope.sendToAll = function() {
+    MessageService.sendToAll("")
+      .then(function() {
+        updateMessageList();
+      });
   }
-})
-/*
-.controller('NewUserCtrl', function($scope, $state, PeopleService) {
-  $scope.addItem = function(form) {
-    PeopleService.add(form.username.$modelValue, form.password.$modelValue).then(function() {
-      console.log('new user added');
-      $state.go('tab.people');
-    });
-  }
-})
-.controller('UserDetailCtrl', function($scope, $stateParams, PeopleService) {
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    PeopleService.get($stateParams.userId).then(function(user) {
-      $scope.user = user;
-      $scope.$apply();
-    })
-  });
-})
 
-.controller('UserMsgCtrl', function($scope, $state, $stateParams, PeopleService, MessageService) {
-  PeopleService.get($stateParams.userId).then(function(user) {
-    $scope.destObject = user;
-    $scope.destination = user.attributes.username;
-    $scope.$apply();
-  });
+  $scope.sendToGroup = function(group) {
+    MessageService.sendToGroup(group, "")
+      .then(function() {
+        updateMessageList();
+      });
+  }
 
-  $scope.send = function(user) {
-    MessageService.sendToUser(user).then(function() {
-      $state.go('tab.messages-user-chat', {userId: user.id});
-    });
+  $scope.sendToLocation = function(location) {
+    MessageService.sendToLocation(location, "")
+      .then(function() {
+        updateMessageList();
+      });
   }
 })
-*/
 
 
 .controller('GroupsCtrl', function($scope, GroupService) {
@@ -187,7 +97,7 @@ angular.module('starter.controllers', [])
     });
   }
 })
-.controller('GroupDetailCtrl', function($scope, $stateParams, GroupService) {
+.controller('GroupDetailCtrl', function($scope, $state, $stateParams, GroupService, MessageService) {
   function updateGroupInfo() {
     GroupService.get($stateParams.groupId).then(function(data) {
       $scope.group = data;
@@ -203,7 +113,15 @@ angular.module('starter.controllers', [])
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateGroupInfo();
   });
+
+  $scope.sendMessage = function(group) {
+    MessageService.sendToGroup(group, "")
+      .then(function() {
+        $state.go('tab.messages');
+      });
+  }
 })
+
 
 .controller('LocationsCtrl', function($scope, LocationService) {
   function updateLocationList() {
@@ -230,15 +148,7 @@ angular.module('starter.controllers', [])
     });
   }
 })
-.controller('NewLocationCtrl', function($scope, $state, LocationService) {
-  $scope.addItem = function(form) {
-    LocationService.add(form.locationName.$modelValue).then(function() {
-      console.log('new location added');
-      $state.go('tab.locations');
-    });
-  }
-})
-.controller('LocationDetailCtrl', function($scope, $stateParams, LocationService) {
+.controller('LocationDetailCtrl', function($scope, $state, $stateParams, LocationService, MessageService) {
   function updateLocationInfo() {
     LocationService.get($stateParams.locationId).then(function(data) {
       $scope.location = data;
@@ -256,4 +166,12 @@ angular.module('starter.controllers', [])
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateLocationInfo();
   });
+
+
+  $scope.sendMessage = function(location) {
+    MessageService.sendToLocation(location, "")
+      .then(function() {
+        $state.go('tab.messages');
+      });
+  }
 });
