@@ -48,7 +48,6 @@ angular.module('starter.controllers', [])
     PeopleService.currentUser().then(function(user) {
       $scope.lastLocation = user.attributes.lastLocation;
 
-      console.log((new Date()).getTime() - user.attributes.lastLocationDate.getTime());
       $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
         (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 10;
 
