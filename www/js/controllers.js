@@ -50,7 +50,7 @@ angular.module('starter.controllers', [])
 
       console.log((new Date()).getTime() - user.attributes.lastLocationDate.getTime());
       $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
-        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60;
+        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 10;
 
       if ($scope.askForLocation) {
         LocationService.all().then(function(locations) {
