@@ -63,9 +63,20 @@ angular.module('starter.controllers', [])
     });
   }
 
+  var updateTimer = undefined;
+
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateMessageList();
     checkLocation();
+
+    updateTimer = setInterval(function() {
+      updateMessageList();
+      checkLocation();
+    }, 10000);
+  });
+
+  $scope.$on('$ionicView.leave', function (viewInfo, state) {
+    clearInterval(updateTimer);
   });
 
   $scope.sendToAll = function() {
@@ -90,9 +101,11 @@ angular.module('starter.controllers', [])
   }
 
   $scope.updateLocation = function(newLocation) {
-    LocationService.updateLocation(newLocation).then(function() {
-      checkLocation();
-    });
+    console.log(newLocation);
+    if (newLocation !== null)
+      LocationService.updateLocation(newLocation).then(function() {
+        checkLocation();
+      });
   }
 
   $scope.confirmLocation = function() {
