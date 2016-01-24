@@ -1,14 +1,16 @@
 <ion-view view-title="Teams">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
-        <h2>{{group.attributes.name}}</h2>
+      <ion-toggle ng-repeat="group in groups" ng-checked="group.followed" ng-click="follow(group)">
+        {{group.attributes.name}}
+      </ion-toggle>
+      <!--ion-item class="item-remove-animate item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
         <i class="icon ion-chevron-right icon-accessory"></i>
 
         <ion-option-button class="button-assertive" ng-click="remove(group)">
           Delete
         </ion-option-button>
-      </ion-item>
+      </ion-item-->
 
       <form name="form" ng-model="form">
         <ion-item class="item-input-inset">

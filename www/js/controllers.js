@@ -75,6 +75,7 @@ angular.module('starter.controllers', [])
   function updateGroupList() {
     GroupService.all().then(function(data) {
       $scope.groups = data;
+      console.log(data);
       $scope.$apply();
       console.log('scope.groups updated');
     });
@@ -95,6 +96,17 @@ angular.module('starter.controllers', [])
     GroupService.add(form.groupName.$modelValue).then(function() {
       updateGroupList();
     });
+  }
+
+  $scope.follow = function(group) {
+    if (group.followed) {
+      group.followed = false;
+      GroupService.removeUser(group);
+    }
+    else {
+      group.followed = true;
+      GroupService.addUser(group);
+    }
   }
 })
 .controller('GroupDetailCtrl', function($scope, $state, $stateParams, GroupService, MessageService) {
