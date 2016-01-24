@@ -59,7 +59,8 @@ angular.module('starter.services', [])
       return query.get(userId);
     },
     currentUser: function() {
-      return Parse.User.current();
+      var user = Parse.User.current();
+      return user.fetch();
     },
     add: function(name, password) {
       var newUser = new userObj();
@@ -187,6 +188,17 @@ angular.module('starter.services', [])
       var query = new Parse.Query(userObj);
       query.equalTo('lastLocation', location);
       return query.find();
+    },
+    updateLocation: function(location) {
+      var user = Parse.User.current();
+      user.set('lastLocation', location);
+      user.set('lastLocationDate', new Date());
+      return user.save();
+    },
+    confirmLocation: function() {
+      var user = Parse.User.current();
+      user.set('lastLocationDate', new Date());
+      return user.save();
     }
   };
 });

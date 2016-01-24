@@ -36,7 +36,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService) {
+.controller('MessagesCtrl', function($scope, MessageService, PeopleService, LocationService) {
   function updateMessageList() {
     MessageService.all().then(function(data) {
       $scope.messages = data;
@@ -44,8 +44,28 @@ angular.module('starter.controllers', [])
     });
   }
 
+  function checkLocation() {
+    PeopleService.currentUser().then(function(user) {
+      $scope.lastLocation = user.attributes.lastLocation;
+
+      console.log((new Date()).getTime() - user.attributes.lastLocationDate.getTime());
+      $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
+        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60;
+
+      if ($scope.askForLocation) {
+        LocationService.all().then(function(locations) {
+          $scope.locations = locations;
+          $scope.$apply();
+        })
+      }
+      else
+        $scope.$apply();
+    });
+  }
+
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateMessageList();
+    checkLocation();
   });
 
   $scope.sendToAll = function() {
@@ -67,6 +87,18 @@ angular.module('starter.controllers', [])
       .then(function() {
         updateMessageList();
       });
+  }
+
+  $scope.updateLocation = function(newLocation) {
+    LocationService.updateLocation(newLocation).then(function() {
+      checkLocation();
+    });
+  }
+
+  $scope.confirmLocation = function() {
+    LocationService.confirmLocation().then(function() {
+      checkLocation();
+    });
   }
 })
 
