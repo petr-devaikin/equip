@@ -1,7 +1,7 @@
 <ion-view view-title="Messages">
   <ion-content>
     <div class="padding">
-      <button class="button button-block button-positive" ng-click="sendToAll()">
+      <button class="button button-block button-positive" ng-mousedown="startRecording()" ng-mouseup="stopRecording()">
         New Message to All
       </button>
     </div>

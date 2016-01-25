@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -25,10 +25,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD",
       "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2"
     );
+
+
+    //console.log(Media);
+    console.log(navigator.device.capture);
+
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -108,5 +113,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');
+
 
 });

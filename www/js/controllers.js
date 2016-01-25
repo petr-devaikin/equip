@@ -13,6 +13,7 @@ angular.module('starter.controllers', [])
       })
       .fail(function(error) {
         console.log('Auth error');
+        $state.go('tab.messages');
       });
   }
 })
@@ -36,7 +37,41 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService) {
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture ) {
+
+  var recorder = new Object;
+  recorder.stop = function() {
+    window.plugins.audioRecorderAPI.stop(function(msg) {
+      // success
+      console.log('ok: ' + msg);
+    }, function(msg) {
+      // failed
+      console.log('ko: ' + msg);
+    });
+  }
+
+  recorder.playback = function() {
+    window.plugins.audioRecorderAPI.playback(function(msg) {
+      // complete
+      console.log('ok: ' + msg);
+    }, function(msg) {
+      // failed
+      console.log('ko: ' + msg);
+    });
+  }
+
+  recorder.record = function() {
+    window.plugins.audioRecorderAPI.record(function(msg) {
+      // complete
+      recorder.playback();
+      console.log('ok: ' + msg);
+    }, function(msg) {
+      // failed
+      console.log('ko: ' + msg);
+    }); // record 30 seconds
+  }
+
+
   function updateMessageList() {
     MessageService.all().then(function(data) {
       $scope.messages = data;
@@ -44,12 +79,10 @@ angular.module('starter.controllers', [])
     });
   }
 
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateMessageList();
-  });
+
 
   $scope.sendToAll = function() {
-    MessageService.sendToAll("")
+    MessageService.sendToAll("ciao")
       .then(function() {
         updateMessageList();
       });
@@ -68,6 +101,40 @@ angular.module('starter.controllers', [])
         updateMessageList();
       });
   }
+
+  $scope.startRecording = function(){
+    console.log('start recording');
+    recorder.record()
+
+
+    // window.plugins.audioRecorderAPI.record(function(msg) {
+    //   // complete
+    //   window.plugins.audioRecorderAPI.playback();
+    //   console.log('ok-record: ' + msg);
+    // }, function(msg) {
+    //   // failed
+    //   console.log('ko-record: ' + msg);
+    // });
+  }
+
+
+  $scope.stopRecording = function(){
+    console.log('stop recording');
+    recorder.stop();
+
+    // window.plugins.audioRecorderAPI.stop(function(msg) {
+    //   window.plugins.audioRecorderAPI.playback();
+    //   console.log('ok-stop: ' + msg);
+    // }, function(msg) {
+    //   // failed
+    //   console.log('ko-stop: ' + msg);
+    // });
+  }
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateMessageList();
+  });
+
 })
 
 

@@ -30,8 +30,11 @@ angular.module('starter.services', [])
       newMsg.set('toLocation', location);
       return newMsg.save();
     }
+    
   };
 })
+
+
 
 .factory('AuthService', function() {
   var userObj = Parse.Object.extend("User");
