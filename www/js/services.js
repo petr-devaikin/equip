@@ -61,6 +61,10 @@ angular.module('starter.services', [])
       query.include('lastLocation');
       return query.get(userId);
     },
+    currentUser: function() {
+      var user = Parse.User.current();
+      return user.fetch();
+    },
     add: function(name, password) {
       var newUser = new userObj();
       newUser.set("username", name);
@@ -84,7 +88,23 @@ angular.module('starter.services', [])
     all: function() {
       console.log('get groups request sent to server');
       var query = new Parse.Query(groupObj);
-      return query.find();
+      return query.find().then(function(allGroups) {
+        for (var i = 0; i < allGroups.length; i++)
+          allGroups[i].followed = false;
+
+        var userGroupQuery = new Parse.Query(userGroupObj);
+        userGroupQuery.equalTo('user', Parse.User.current());
+        userGroupQuery.include('group');
+
+        return userGroupQuery.find().then(function(userGroups) {
+          for (var i = 0; i < userGroups.length; i++) {
+            var g = allGroups.find(function(g) { return g.id == userGroups[i].attributes.group.id; });
+            if (g !== undefined)
+              g.followed = true;
+          }
+          return Parse.Promise.as(allGroups);
+        })
+      });
     },
     add: function(name) {
       var newGroup = new groupObj();
@@ -94,6 +114,7 @@ angular.module('starter.services', [])
     },
     remove: function(group) {
       console.log('remove group sent to server ' + group.attributes.name);
+      // REMOVE userGroup of this group! or cascade?
       return group.destroy();
     },
     get: function(groupId) {
@@ -120,13 +141,21 @@ angular.module('starter.services', [])
     addUser: function(group, user) {
       var newUserGroup = new userGroupObj();
       newUserGroup.set('group', group);
-      newUserGroup.set('user', user);
+      if (user === undefined)
+        newUserGroup.set('user', Parse.User.current());
+      else
+        newUserGroup.set('user', user);
+
       return newUserGroup.save();
     },
     removeUser: function(group, user) {
       var userGroupQuery = new Parse.Query(userGroupObj);
       userGroupQuery.equalTo('group', group);
-      userGroupQuery.equalTo('user', user);
+      if (user === undefined)
+        userGroupQuery.equalTo('user', Parse.User.current());
+      else
+        userGroupQuery.equalTo('user', user);
+
       return userGroupQuery.first().then(function(userGroup) {
         return userGroup.destroy();
       });
@@ -162,6 +191,17 @@ angular.module('starter.services', [])
       var query = new Parse.Query(userObj);
       query.equalTo('lastLocation', location);
       return query.find();
+    },
+    updateLocation: function(location) {
+      var user = Parse.User.current();
+      user.set('lastLocation', location);
+      user.set('lastLocationDate', new Date());
+      return user.save();
+    },
+    confirmLocation: function() {
+      var user = Parse.User.current();
+      user.set('lastLocationDate', new Date());
+      return user.save();
     }
   };
 });

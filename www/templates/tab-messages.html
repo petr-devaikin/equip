@@ -1,10 +1,43 @@
 <ion-view view-title="Messages">
   <ion-content>
+    <div ng-show="askForLocation" class="padding" style="background: #FFFFC4;">
+      <div ng-show="lastLocation !== undefined">
+        <h3>
+          Are you still at {{lastLocation.attributes.name}}?
+        </h3>
+        <button class="button button-positive button-small button-block" ng-click="confirmLocation()">Yes</button>
+
+        <label class="item item-input item-select">
+          <div class="input-label">
+            No! I'm currently at
+          </div>
+          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation" ng-change="updateLocation(newLocation)"></select>
+        </label>
+      </div>
+
+      <div ng-show="lastLocation === undefined">
+        <h3>
+          Choose your location
+        </h3>
+        <label class="item item-input item-select">
+          <div class="input-label">
+            I'm currently at
+          </div>
+          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation" ng-change="updateLocation(newLocation)"></select>
+        </label>
+      </div>
+    </div>
+
+    <div ng-show="!askForLocation" class="padding">
+      Your location: {{lastLocation.attributes.name}}
+    </div>
+
     <div class="padding">
       <button class="button button-block button-positive" ng-mousedown="startRecording()" ng-mouseup="stopRecording()">
         New Message to All
       </button>
     </div>
+
     <ion-list>
       <ion-item ng-repeat="message in messages">
         <h2 ng-show="message.attributes.toGroup">GROUP: {{ message.attributes.toGroup.attributes.name }}</h2>

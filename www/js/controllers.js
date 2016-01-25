@@ -37,7 +37,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture ) {
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, PeopleService, LocationService ) {
 
   var recorder = new Object;
   recorder.stop = function() {
@@ -79,7 +79,39 @@ angular.module('starter.controllers', [])
     });
   }
 
+  function checkLocation() {
+    PeopleService.currentUser().then(function(user) {
+      $scope.lastLocation = user.attributes.lastLocation;
 
+      $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
+        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 10;
+
+      if ($scope.askForLocation) {
+        LocationService.all().then(function(locations) {
+          $scope.locations = locations;
+          $scope.$apply();
+        })
+      }
+      else
+        $scope.$apply();
+    });
+  }
+
+  var updateTimer = undefined;
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateMessageList();
+    checkLocation();
+
+    updateTimer = setInterval(function() {
+      updateMessageList();
+      checkLocation();
+    }, 10000);
+  });
+
+  $scope.$on('$ionicView.leave', function (viewInfo, state) {
+    clearInterval(updateTimer);
+  });
 
   $scope.sendToAll = function() {
     MessageService.sendToAll("ciao")
@@ -101,6 +133,7 @@ angular.module('starter.controllers', [])
         updateMessageList();
       });
   }
+
 
   $scope.startRecording = function(){
     console.log('start recording');
@@ -135,6 +168,19 @@ angular.module('starter.controllers', [])
     updateMessageList();
   });
 
+  $scope.updateLocation = function(newLocation) {
+    console.log(newLocation);
+    if (newLocation !== null)
+      LocationService.updateLocation(newLocation).then(function() {
+        checkLocation();
+      });
+  }
+
+  $scope.confirmLocation = function() {
+    LocationService.confirmLocation().then(function() {
+      checkLocation();
+    });
+  }
 })
 
 
@@ -142,6 +188,7 @@ angular.module('starter.controllers', [])
   function updateGroupList() {
     GroupService.all().then(function(data) {
       $scope.groups = data;
+      console.log(data);
       $scope.$apply();
       console.log('scope.groups updated');
     });
@@ -162,6 +209,17 @@ angular.module('starter.controllers', [])
     GroupService.add(form.groupName.$modelValue).then(function() {
       updateGroupList();
     });
+  }
+
+  $scope.follow = function(group) {
+    if (group.followed) {
+      group.followed = false;
+      GroupService.removeUser(group);
+    }
+    else {
+      group.followed = true;
+      GroupService.addUser(group);
+    }
   }
 })
 .controller('GroupDetailCtrl', function($scope, $state, $stateParams, GroupService, MessageService) {
