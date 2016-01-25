@@ -32,7 +32,7 @@
       Your location: {{lastLocation.attributes.name}}
     </div>
 
-    <button class="button button-assertive icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 10px; left: 50%; margin-left: -26px; z-index: 100;" ng-click="sendToAll()"></button>
+    <button class="button button-assertive icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 10px; left: 50%; margin-left: -26px; z-index: 100;"  ng-mousedown="startRecording()" ng-mouseup="stopRecording()"></button>
 
     <div class="card" ng-repeat="message in messages">
       <div ng-show="message.attributes.toGroup" class="item item-divider">
