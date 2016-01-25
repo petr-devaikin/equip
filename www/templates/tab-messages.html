@@ -1,11 +1,11 @@
-<ion-view view-title="Messages">
+<ion-view view-title="EQUIP">
   <ion-content>
     <div ng-show="askForLocation" class="padding" style="background: #FFFFC4;">
       <div ng-show="lastLocation !== undefined">
         <h3>
           Are you still at {{lastLocation.attributes.name}}?
         </h3>
-        <button class="button button-positive button-small button-block" ng-click="confirmLocation()">Yes</button>
+        <button class="button button-light button-block" ng-click="confirmLocation()" style="border: 1px solid rgb(211, 211, 211); text-align: left; border-radius: 0;">Yes</button>
 
         <label class="item item-input item-select">
           <div class="input-label">
@@ -32,24 +32,26 @@
       Your location: {{lastLocation.attributes.name}}
     </div>
 
-    <div class="padding">
-      <button class="button button-block button-positive" ng-click="sendToAll()">
-        New Message to All
-      </button>
-    </div>
+    <button class="button button-assertive icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 10px; left: 50%; margin-left: -26px; z-index: 100;" ng-click="sendToAll()"></button>
 
-    <ion-list>
-      <ion-item ng-repeat="message in messages">
-        <h2 ng-show="message.attributes.toGroup">GROUP: {{ message.attributes.toGroup.attributes.name }}</h2>
-        <h2 ng-show="message.attributes.toLocation">LOCATION: {{ message.attributes.toLocation.attributes.name }}</h2>
-        <h2 ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined">TO ALL</h2>
-        <p>
-          @{{ message.attributes.fromUser.attributes.username }}
-          at
-          {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes() + ":" + message.attributes.createdAt.getUTCSeconds(); }}
-          {{ message.attributes.createdAt.getUTCFullYear() +"/"+ (message.attributes.createdAt.getUTCMonth()+1) +"/"+ message.attributes.createdAt.getUTCDate() }}
-        </p>
-      </ion-item>
-    </ion-list>
+    <div class="card" ng-repeat="message in messages">
+      <div ng-show="message.attributes.toGroup" class="item item-divider">
+        GROUP: {{ message.attributes.toGroup.attributes.name }}
+      </div>
+      <div ng-show="message.attributes.toLocation" class="item item-divider">
+        <i class="icon ion-location"></i> {{ message.attributes.toLocation.attributes.name }}
+      </div>
+      <div ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined" class="item item-divider">
+        <i class="icon ion-speakerphone"></i> ALL
+      </div>
+
+      <div class="item item-text-wrap item-icon-left">
+        <i class="icon ion-play"></i>
+        @{{ message.attributes.fromUser.attributes.username }}
+        at
+        {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes() + ":" + message.attributes.createdAt.getUTCSeconds(); }}
+        {{ message.attributes.createdAt.getUTCFullYear() +"/"+ (message.attributes.createdAt.getUTCMonth()+1) +"/"+ message.attributes.createdAt.getUTCDate() }}
+      </div>
+    </div>
   </ion-content>
 </ion-view>
