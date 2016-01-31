@@ -1,15 +1,15 @@
-<ion-view view-title="EQUIP">
+<ion-view view-title="">
   <ion-content>
-    <div ng-show="askForLocation" class="padding" style="background: #FFFFC4;">
+    <div ng-show="askForLocation" class="padding" style="background: #fff; border-bottom: 1px solid #ccc; padding-bottom: 20px; padding-top: 0;">
       <div ng-show="lastLocation !== undefined">
-        <h3>
+        <button class="button button-positive" ng-click="confirmLocation()" style="border: 1px solid rgb(211, 211, 211); text-align: left; border-radius: 0; float: right; position: relative; height: 30px; width: 80px; text-align: center;">Yes</button>
+        <h4 style="padding-top: 15px; margin-bottom: 20px;">
           Are you still at {{lastLocation.attributes.name}}?
-        </h3>
-        <button class="button button-light button-block" ng-click="confirmLocation()" style="border: 1px solid rgb(211, 211, 211); text-align: left; border-radius: 0;">Yes</button>
+        </h4>
 
         <label class="item item-input item-select">
           <div class="input-label">
-            No! I'm currently at
+            NO, I'm currently at
           </div>
           <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation" ng-change="updateLocation(newLocation)"></select>
         </label>
@@ -28,11 +28,12 @@
       </div>
     </div>
 
-    <div ng-show="!askForLocation" class="padding">
-      Your location: {{lastLocation.attributes.name}}
+    <div ng-show="!askForLocation" class="padding your-location">
+      Your location: <strong>{{lastLocation.attributes.name}}</strong>
+      <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <button class="button button-assertive icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 10px; left: 50%; margin-left: -26px; z-index: 100;"  ng-mousedown="startRecording()" ng-mouseup="stopRecording()"></button>
+    <button class="button icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 20px; left: 50%; margin-left: -26px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mousedown="startRecording()" ng-mouseup="stopRecording()"></button>
 
     <div class="card" ng-repeat="message in messages">
       <div ng-show="message.attributes.toGroup" class="item item-divider">
@@ -41,16 +42,20 @@
       <div ng-show="message.attributes.toLocation" class="item item-divider">
         <i class="icon ion-location"></i> {{ message.attributes.toLocation.attributes.name }}
       </div>
-      <div ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined" class="item item-divider">
-        <i class="icon ion-speakerphone"></i> ALL
+      <div ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined" class="item item-divider" style="background: #beeced;">
+        ALL (BROADCAST)
+        <span style="float: right;">1 NEW MESSAGE</span>
       </div>
 
       <div class="item item-text-wrap item-icon-left">
         <i class="icon ion-play"></i>
-        @{{ message.attributes.fromUser.attributes.username }}
+        <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
+        from
+        <span style="font-weight: bold; text-transform: uppercase;">STAGE</span>
         at
-        {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes() + ":" + message.attributes.createdAt.getUTCSeconds(); }}
-        {{ message.attributes.createdAt.getUTCFullYear() +"/"+ (message.attributes.createdAt.getUTCMonth()+1) +"/"+ message.attributes.createdAt.getUTCDate() }}
+        <span style="font-weight: bold; text-transform: uppercase;">
+          {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
+        </span>
       </div>
     </div>
   </ion-content>

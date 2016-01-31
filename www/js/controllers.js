@@ -74,7 +74,7 @@ angular.module('starter.controllers', [])
 
   function updateMessageList() {
     MessageService.all().then(function(data) {
-      $scope.messages = data;
+      $scope.messages = data.slice(0, 1);
       $scope.$apply();
     });
   }
@@ -84,7 +84,7 @@ angular.module('starter.controllers', [])
       $scope.lastLocation = user.attributes.lastLocation;
 
       $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
-        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 1;
+        (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 30;
 
       if ($scope.askForLocation) {
         LocationService.all().then(function(locations) {
