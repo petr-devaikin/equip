@@ -41,8 +41,7 @@ angular.module('starter.controllers', [])
 
 
 
-  $cordovaNativeAudio
-    .preloadSimple('click', 'sound/test.mp3')
+  $cordovaNativeAudio.preloadSimple('click', 'sound/test.mp3')
     .then(function (msg) {
       console.log(msg);
     }, function (error) {

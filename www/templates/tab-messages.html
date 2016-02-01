@@ -48,15 +48,10 @@
       </div>
 
       <div class="item item-text-wrap item-icon-left">
-<<<<<<< HEAD
-        <i class="icon ion-play" ng-click="playMessage(message)"></i>
-        @{{ message.attributes.fromUser.attributes.username }}
-=======
-        <i class="icon ion-play"></i>
+        <i class="icon ion-play" ng-click="playMessage(message)" ></i>
         <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
         from
         <span style="font-weight: bold; text-transform: uppercase;">STAGE</span>
->>>>>>> c7d519f881e0bfeba045a9df7b61a640997c1722
         at
         <span style="font-weight: bold; text-transform: uppercase;">
           {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
