@@ -37,11 +37,21 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, PeopleService, LocationService ) {
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture,$cordovaNativeAudio, PeopleService, LocationService, $cordovaFile ) {
+
+
+
+  $cordovaNativeAudio
+    .preloadSimple('click', 'sound/test.mp3')
+    .then(function (msg) {
+      console.log(msg);
+    }, function (error) {
+      alert(error);
+    });
 
   var recorder = new Object;
   recorder.stop = function() {
-    window.plugins.audioRecorderAPI.stop(function(msg) {
+    window.plugins.audioRecorderAPI.stop(function(msg) {querySelector('query')
       // success
       console.log('ok: ' + msg);
     }, function(msg) {
@@ -49,6 +59,8 @@ angular.module('starter.controllers', [])
       console.log('ko: ' + msg);
     });
   }
+
+
 
   recorder.playback = function() {
     window.plugins.audioRecorderAPI.playback(function(msg) {
@@ -113,8 +125,8 @@ angular.module('starter.controllers', [])
     clearInterval(updateTimer);
   });
 
-  $scope.sendToAll = function() {
-    MessageService.sendToAll("ciao")
+  $scope.sendToAll = function(pathMessage) {
+    MessageService.sendToAll(pathMessage)
       .then(function() {
         updateMessageList();
       });
@@ -137,31 +149,47 @@ angular.module('starter.controllers', [])
 
   $scope.startRecording = function(){
     console.log('start recording');
-    recorder.record()
-
-
-    // window.plugins.audioRecorderAPI.record(function(msg) {
-    //   // complete
-    //   window.plugins.audioRecorderAPI.playback();
-    //   console.log('ok-record: ' + msg);
-    // }, function(msg) {
-    //   // failed
-    //   console.log('ko-record: ' + msg);
-    // });
+    //recorder.record();
+    window.plugins.audioRecorderAPI.record(function(savedFilePath) {
+    var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
+    var directory;
+    if (cordova.file.documentsDirectory) {
+      directory = cordova.file.documentsDirectory; // for iOS
+    } else {
+      directory = cordova.file.externalRootDirectory; // for Android
+    }
+    $cordovaFile.copyFile(
+      cordova.file.dataDirectory, fileName,
+      directory, "audioFileEquip.m4a"
+    )
+      .then(function (success) {
+        MessageService.sendToAll("audioFileEquip.m4a")
+          .then(function() {
+            updateMessageList();
+          });
+      }, function (error) {
+        alert(JSON.stringify(error));
+      });
+  }, function(msg) {
+    alert('ko: ' + msg);
+  }, 3);
   }
 
 
   $scope.stopRecording = function(){
     console.log('stop recording');
-    recorder.stop();
+    //recorder.stop();
+  }
 
-    // window.plugins.audioRecorderAPI.stop(function(msg) {
-    //   window.plugins.audioRecorderAPI.playback();
-    //   console.log('ok-stop: ' + msg);
-    // }, function(msg) {
-    //   // failed
-    //   console.log('ko-stop: ' + msg);
-    // });
+  $scope.playMessage = function(message){
+    console.log('play message');
+    $cordovaNativeAudio.play('click');
+    MessageService.getContentMessage(message).then(function(audioFileEquip){
+      //record file on device
+      //playit
+
+    });
+
   }
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {

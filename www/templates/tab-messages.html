@@ -46,7 +46,7 @@
       </div>
 
       <div class="item item-text-wrap item-icon-left">
-        <i class="icon ion-play"></i>
+        <i class="icon ion-play" ng-click="playMessage(message)"></i>
         @{{ message.attributes.fromUser.attributes.username }}
         at
         {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes() + ":" + message.attributes.createdAt.getUTCSeconds(); }}

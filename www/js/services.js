@@ -1,11 +1,15 @@
 angular.module('starter.services', [])
 
-.factory('MessageService', function() {
+.factory('MessageService', function($cordovaFile) {
   var msgObj = Parse.Object.extend("Message");
+  var user = Parse.User.current().fetch();
+
+
 
   return {
     all: function() {
       var query = new Parse.Query(msgObj);
+      query.include('fromUser');
       query.include('fromUser');
       query.include('toGroup');
       query.include('toLocation');
@@ -13,24 +17,43 @@ angular.module('starter.services', [])
       console.log('get messages request sent to server');
       return query.find();
     },
-    sendToAll: function(data) {
+    sendToAll: function(pathMessage) {
+      var fileP = new File("ciccio.txt");
+
+      var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
+      var fileParse = new Parse.File('AFprova.m4a', fileP);
+      console.log('send messagge to all request');
       var newMsg = new msgObj();
       newMsg.set('fromUser', Parse.User.current());
+      newMsg.set('audioContent', fileParse);
       return newMsg.save();
     },
-    sendToGroup: function(group, data) {
+    sendToGroup: function(group, pathMessage) {
+      var audioFile = new File(pathMessage);
+      var fileParse = new Parse.File('AFprova.m4a',audioFile,'audioFile');
       var newMsg = new msgObj();
       newMsg.set('fromUser', Parse.User.current());
       newMsg.set('toGroup', group);
+      newMsg.set('audioContent', fileParse);
       return newMsg.save();
     },
-    sendToLocation: function(location, data) {
+    sendToLocation: function(location, pathMessage) {
+      var audioFile = new File(pathMessage);
+      var fileParse = new Parse.File('AFprova.m4a',audioFile,'audioFile');
       var newMsg = new msgObj();
       newMsg.set('fromUser', Parse.User.current());
       newMsg.set('toLocation', location);
+      newMsg.set('audioContent', fileParse);
       return newMsg.save();
+    },
+    getContentMessage: function(msgId){
+      console.log('get audioFile');
+      var query = new Parse.Query(msgObj);
+      query.exists('audioContent');
+      query.equalTo('Message', msgId);
+      return query.get('audioContent');
     }
-    
+
   };
 })
 
