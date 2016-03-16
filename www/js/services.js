@@ -17,12 +17,15 @@ angular.module('starter.services', [])
       console.log('get messages request sent to server');
       return query.find();
     },
-    sendToAll: function(pathMessage) {
-      var fileP = new File("ciccio.txt");
-
-      var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
-      var fileParse = new Parse.File('AFprova.m4a', fileP);
+    sendToAll: function(msgBs64) {
       console.log('send messagge to all request');
+      //var fileP = new File("ciccio.txt");
+
+      //var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
+      var fileParse = new Parse.File('AFprova.m4a', msgBs64);
+      console.log(msgBs64);
+
+      //var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
       var newMsg = new msgObj();
       newMsg.set('fromUser', Parse.User.current());
       newMsg.set('audioContent', fileParse);

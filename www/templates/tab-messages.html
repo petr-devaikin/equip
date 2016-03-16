@@ -33,7 +33,7 @@
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <button class="button icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 20px; left: 50%; margin-left: -26px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mousedown="startRecording()" ng-mouseup="stopRecording()"></button>
+    <button class="button icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 20px; left: 50%; margin-left: -26px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopRecording()" ng-mousedown="startRecording()"  ></button>
 
     <div class="card" ng-repeat="message in messages">
       <div ng-show="message.attributes.toGroup" class="item item-divider">

@@ -37,18 +37,25 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture,$cordovaNativeAudio, PeopleService, LocationService, $cordovaFile ) {
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture,$cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia ) {
 
 
+  //var src = '/sound/test.mp3';
+  //var media = $cordovaMedia.newMedia(src);
+  //media.seekTo(5000); // milliseconds value
 
-  $cordovaNativeAudio.preloadSimple('click', 'sound/test.mp3')
-    .then(function (msg) {
-      console.log(msg);
-    }, function (error) {
-      alert(error);
-    });
+  //var src = "myrecording.mp3";
+  //var mediaRec = $cordovaMedia.newMedia(src, mediaSuccess, mediaError);
+
+  // $cordovaNativeAudio.preloadSimple('click', 'sound/audioFileEquip.m4a')
+  //   .then(function (msg) {
+  //     console.log(msg);
+  //   }, function (error) {
+  //     alert(error);
+  //   });
 
   var recorder = new Object;
+
   recorder.stop = function() {
     window.plugins.audioRecorderAPI.stop(function(msg) {querySelector('query')
       // success
@@ -58,8 +65,6 @@ angular.module('starter.controllers', [])
       console.log('ko: ' + msg);
     });
   }
-
-
 
   recorder.playback = function() {
     window.plugins.audioRecorderAPI.playback(function(msg) {
@@ -150,46 +155,132 @@ angular.module('starter.controllers', [])
     console.log('start recording');
     //recorder.record();
     window.plugins.audioRecorderAPI.record(function(savedFilePath) {
+
     var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
     var directory;
+
+
+
     if (cordova.file.documentsDirectory) {
       directory = cordova.file.documentsDirectory; // for iOS
     } else {
       directory = cordova.file.externalRootDirectory; // for Android
     }
+
+    console.log(directory);
+    console.log(fileName);
+
+    //base64 for parse
+
+    // abPathMessage = directory+"audioFileEquip.m4a";
+    //
+    // var file = new Media(abPathMessage);
+    //  var reader = new FileReader();
+    //  reader.onload = function(readerEvt) {
+    //         var binaryString = readerEvt.target.result;
+    //         console.log(btoa(binaryString));
+    //     };
+    //
+    //     reader.readAsBinaryString(file);
+
+
+
+
+
     $cordovaFile.copyFile(
       cordova.file.dataDirectory, fileName,
       directory, "audioFileEquip.m4a"
-    )
-      .then(function (success) {
-        MessageService.sendToAll("audioFileEquip.m4a")
-          .then(function() {
-            updateMessageList();
-          });
+    ).then(function (success) {
+
+
+      //$cordovaFile.readFile(abPathMessage);
+      
+      var buffer = $cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a");
+      console.log(buffer);
+      var bufferRead;
+      var fileReader = new FileReader();
+        fileReader.onload = function() {
+          bufferRead = this.result;
+        };
+        fileReader.readAsArrayBuffer(buffer);
+        console.log(bufferRead);
+
+        // MessageService.sendToAll($cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a"))
+        //   .then(function() {
+        //     updateMessageList();
+        //   });
       }, function (error) {
         alert(JSON.stringify(error));
       });
   }, function(msg) {
     alert('ko: ' + msg);
-  }, 3);
+  }, 5);
+
+
+
+
+
+    //  var mp3URL = ("testEquip.mp3");
+      // var media = $cordovaMedia.newMedia(mp3URL, mediaSuccess, mediaError);
+      // media.startRecord();
+
+
   }
 
 
   $scope.stopRecording = function(){
     console.log('stop recording');
     //recorder.stop();
+    //media.stopRecord();
+    //media.release();
   }
 
   $scope.playMessage = function(message){
     console.log('play message');
-    $cordovaNativeAudio.play('click');
-    MessageService.getContentMessage(message).then(function(audioFileEquip){
-      //record file on device
-      //playit
 
-    });
+
+    //MessageService.getContentMessage(message).then(function(audioFileEquip){
+    //});
+
+    if (cordova.file.documentsDirectory) {
+      directory = cordova.file.documentsDirectory; // for iOS
+    } else {
+      directory = cordova.file.externalRootDirectory; // for Android
+    }
+
+
+
+    // $cordovaNativeAudio.preloadSimple('click', 'audioFileEquip.m4a')
+    //   .then(function (msg) {
+    //     console.log(msg);
+    //   }, function (error) {
+    //     alert(error);
+    //   });
+
+    var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
+    myMedia.play(); // Android
+
+
+    // var mp3URL = getMediaURL("testEquip.mp3");
+    // var media = $cordovaMedia.newMedia(mp3URL, mediaSuccess, mediaError);
+    // media.play();
 
   }
+
+  function getMediaURL(s) {
+    if(device.platform.toLowerCase() === "android") return "/android_asset/www/" + s;
+    return s;
+}
+
+
+function mediaError(e) {
+    alert('Media Error');
+    alert(JSON.stringify(e));
+}
+
+function mediaSuccess() {
+    alert('Media Success');
+}
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateMessageList();
