@@ -22,14 +22,22 @@ angular.module('starter.services', [])
       //var fileP = new File("ciccio.txt");
 
       //var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
-      var fileParse = new Parse.File('AFprova.m4a', msgBs64);
-      console.log(msgBs64);
+      // var fileParse = new Parse.File('AFprova.m4a', msgBs64);
+      // console.log(msgBs64);
 
-      //var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
-      var newMsg = new msgObj();
-      newMsg.set('fromUser', Parse.User.current());
-      newMsg.set('audioContent', fileParse);
-      return newMsg.save();
+      var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
+      return file.save().then(function(){
+        var newMsg = new msgObj();
+        newMsg.set('fromUser', Parse.User.current());
+        newMsg.set('audioContent', file);
+        console.log("file saved on parse");
+        return newMsg.save();
+      }, function(error){
+        console.log("file saved error: " + error);
+
+      });
+
+
     },
     sendToGroup: function(group, pathMessage) {
       var audioFile = new File(pathMessage);

@@ -150,6 +150,26 @@ angular.module('starter.controllers', [])
       });
   }
 
+  var captureSuccess = function(mediaFiles) {
+    var i, path, len;
+    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+        path = mediaFiles[i].fullPath;
+        // do something interesting with the file
+    }
+};
+
+// capture error callback
+var captureError = function(error) {
+    navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+};
+
+$scope.startRecordingAudio = function(){
+  onsole.log('start record audio');
+  // start audio capture
+  navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
+
+}
+
 
   $scope.startRecording = function(){
     console.log('start recording');
@@ -193,17 +213,36 @@ angular.module('starter.controllers', [])
     ).then(function (success) {
 
 
+      var allPath = directory+"audioFileEquip.m4a";
+      window.plugins.Base64.encodeFile(allPath, function(base64){
+            //console.log('file base64 encoding: ' + base64);
+
+
+            var base64Audio= base64.substring(34);
+
+            console.log('file base64 encoding: ' + base64Audio);
+
+            MessageService.sendToAll(base64Audio)
+              .done(function() {
+                updateMessageList();
+                console.log('DONE message sent to all');
+              })
+              .fail(function(msg){
+                console.log('FAIL message sent to all: '+msg);
+              });
+        });
+
       //$cordovaFile.readFile(abPathMessage);
-      
-      var buffer = $cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a");
-      console.log(buffer);
-      var bufferRead;
-      var fileReader = new FileReader();
-        fileReader.onload = function() {
-          bufferRead = this.result;
-        };
-        fileReader.readAsArrayBuffer(buffer);
-        console.log(bufferRead);
+
+      // var buffer = $cordovaFile.readAsDataURL(directory,"audioFileEquip.m4a");
+      // console.log(buffer);
+      // var bufferRead;
+      // var fileReader = new FileReader();
+      //   fileReader.onload = function() {
+      //     bufferRead = this.result;
+      //   };
+      //   fileReader.readAsArrayBuffer(buffer);
+      //   console.log(bufferRead);
 
         // MessageService.sendToAll($cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a"))
         //   .then(function() {
