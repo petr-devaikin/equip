@@ -35,7 +35,29 @@
 
     <button class="button icon ion-mic-a" style="border-radius: 50%; height: 52px; position: fixed; bottom: 20px; left: 50%; margin-left: -26px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopRecording()" ng-mousedown="startRecording()"  ></button>
 
-    <div class="card" ng-repeat="message in messages">
+    <div class="card" ng-repeat="convo in conversations">
+      <div ng-show="convo.attributes.toGroup" class="item item-divider">
+        GROUP: {{ convo.attributes.toGroup.attributes.name }}
+      </div>
+      <div ng-show="convo.attributes.toLocation" class="item item-divider">
+        <i class="icon ion-location"></i> {{ convo.attributes.toLocation.attributes.name }}
+      </div>
+      <div ng-show="convo.attributes.toLocation === undefined && convo.attributes.toGroup === undefined" class="item item-divider" style="background: #beeced;">
+        ALL (BROADCAST)
+        <!--span style="float: right;">1 NEW MESSAGE</span-->
+      </div>
+
+      <div class="item item-text-wrap item-icon-left">
+        <!--i class="icon ion-play" ng-click="playMessage(message)" ></i-->
+        <span style="font-weight: bold; text-transform: uppercase;">{{ convo.attributes.startedBy.attributes.username }}</span>
+        at
+        <span style="font-weight: bold; text-transform: uppercase;">
+          {{ convo.attributes.createdAt.getUTCHours() + ":" + convo.attributes.createdAt.getUTCMinutes(); }}
+        </span>
+      </div>
+    </div>
+
+    <!--div class="card" ng-repeat="message in messages">
       <div ng-show="message.attributes.toGroup" class="item item-divider">
         GROUP: {{ message.attributes.toGroup.attributes.name }}
       </div>
@@ -57,6 +79,6 @@
           {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
         </span>
       </div>
-    </div>
+    </div-->
   </ion-content>
 </ion-view>

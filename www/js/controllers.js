@@ -37,56 +37,13 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture,$cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia ) {
-
-
-  //var src = '/sound/test.mp3';
-  //var media = $cordovaMedia.newMedia(src);
-  //media.seekTo(5000); // milliseconds value
-
-  //var src = "myrecording.mp3";
-  //var mediaRec = $cordovaMedia.newMedia(src, mediaSuccess, mediaError);
-
-  // $cordovaNativeAudio.preloadSimple('click', 'sound/audioFileEquip.m4a')
-  //   .then(function (msg) {
-  //     console.log(msg);
-  //   }, function (error) {
-  //     alert(error);
-  //   });
-
-  var recorder = new Object;
-
-  recorder.stop = function() {
-    window.plugins.audioRecorderAPI.stop(function(msg) {querySelector('query')
-      // success
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia) {
+  function updateConversationList() {
+    MessageService.allConversations().then(function(data) {
+      $scope.conversations = data;
+      $scope.$apply();
     });
   }
-
-  recorder.playback = function() {
-    window.plugins.audioRecorderAPI.playback(function(msg) {
-      // complete
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
-    });
-  }
-
-  recorder.record = function() {
-    window.plugins.audioRecorderAPI.record(function(msg) {
-      // complete
-      recorder.playback();
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
-    }); // record 30 seconds
-  }
-
 
   function updateMessageList() {
     MessageService.all().then(function(data) {
@@ -116,10 +73,12 @@ angular.module('starter.controllers', [])
   var updateTimer = undefined;
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateConversationList();
     updateMessageList();
     checkLocation();
 
     updateTimer = setInterval(function() {
+      updateConversationList();
       updateMessageList();
       checkLocation();
     }, 10000);
@@ -129,25 +88,11 @@ angular.module('starter.controllers', [])
     clearInterval(updateTimer);
   });
 
-  $scope.sendToAll = function(pathMessage) {
-    MessageService.sendToAll(pathMessage)
+  $scope.sendToConversation = function(convo) {
+    /*MessageService.sendToLocation(location, "")
       .then(function() {
         updateMessageList();
-      });
-  }
-
-  $scope.sendToGroup = function(group) {
-    MessageService.sendToGroup(group, "")
-      .then(function() {
-        updateMessageList();
-      });
-  }
-
-  $scope.sendToLocation = function(location) {
-    MessageService.sendToLocation(location, "")
-      .then(function() {
-        updateMessageList();
-      });
+      });*/
   }
 
 

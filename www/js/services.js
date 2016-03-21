@@ -4,9 +4,15 @@ angular.module('starter.services', [])
   var msgObj = Parse.Object.extend("Message");
   var user = Parse.User.current().fetch();
 
-
-
   return {
+    allConversations: function() {
+      return Parse.Cloud.run('getConversations', {
+        user: Parse.User.current().id
+      });
+    },
+    /*getConversation: function(convoId) {
+      return
+    },*/
     all: function() {
       var query = new Parse.Query(msgObj);
       query.include('fromUser');
