@@ -187,7 +187,7 @@ angular.module('starter.controllers', [])
 
                 console.log('file base64 encoding: ' + base64Audio);
 
-                MessageService.sendToAll(base64Audio)
+                MessageService.sendToConversation(convo, base64Audio)
                   .done(function() {
                     updateMessageList();
                     console.log('DONE message sent to all');
