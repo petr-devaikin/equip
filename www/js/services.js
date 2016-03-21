@@ -57,12 +57,14 @@ angular.module('starter.services', [])
       newMsg.set('audioContent', fileParse);
       return newMsg.save();
     },
-    getContentMessage: function(msgId){
+    getContentMessage: function(message){
       console.log('get audioFile');
-      var query = new Parse.Query(msgObj);
-      query.exists('audioContent');
-      query.equalTo('Message', msgId);
-      return query.get('audioContent');
+      var audioContentMsg = message.get('audioContent');
+      var url = audioContentMsg.url();
+      console.log(url);
+      return url;
+      // query.exists('audioContent');
+      // return query.get('audioContent');
     }
 
   };

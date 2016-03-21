@@ -150,26 +150,6 @@ angular.module('starter.controllers', [])
       });
   }
 
-  var captureSuccess = function(mediaFiles) {
-    var i, path, len;
-    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-        path = mediaFiles[i].fullPath;
-        // do something interesting with the file
-    }
-};
-
-// capture error callback
-var captureError = function(error) {
-    navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
-};
-
-$scope.startRecordingAudio = function(){
-  onsole.log('start record audio');
-  // start audio capture
-  navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
-
-}
-
 
   $scope.startRecording = function(){
     console.log('start recording');
@@ -248,6 +228,7 @@ $scope.startRecordingAudio = function(){
         //   .then(function() {
         //     updateMessageList();
         //   });
+
       }, function (error) {
         alert(JSON.stringify(error));
       });
@@ -277,15 +258,26 @@ $scope.startRecordingAudio = function(){
   $scope.playMessage = function(message){
     console.log('play message');
 
+    var audioContentMsg = message.get('audioContent');
+    var url = audioContentMsg.url();
+    var myMedia = $cordovaMedia.newMedia(url);
+    myMedia.play(); // Android
+    console.log(url);
 
-    //MessageService.getContentMessage(message).then(function(audioFileEquip){
-    //});
+    // MessageService.getContentMessage(message)
+    // .done( function(url){
+    //   var myMedia = $cordovaMedia.newMedia(url);
+    //   myMedia.play(); // Android
+    // })
+    // .fail( function(msg){
+    //     console.log('FAIL message sent to all: '+msg);
+    // });
 
-    if (cordova.file.documentsDirectory) {
-      directory = cordova.file.documentsDirectory; // for iOS
-    } else {
-      directory = cordova.file.externalRootDirectory; // for Android
-    }
+    // if (cordova.file.documentsDirectory) {
+    //   directory = cordova.file.documentsDirectory; // for iOS
+    // } else {
+    //   directory = cordova.file.externalRootDirectory; // for Android
+    // }
 
 
 
@@ -296,8 +288,8 @@ $scope.startRecordingAudio = function(){
     //     alert(error);
     //   });
 
-    var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
-    myMedia.play(); // Android
+    // var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
+    // myMedia.play(); // Android
 
 
     // var mp3URL = getMediaURL("testEquip.mp3");
