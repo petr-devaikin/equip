@@ -156,10 +156,12 @@ angular.module('starter.controllers', [])
     //recorder.record();
     if (window.plugins === undefined) {
       console.log("WEB TEST: send to all");
-      MessageService.sendToAll("")
-        .then(function(convo) {
-          console.log(convo);
-        });
+      MessageService.startConversationWithAll().then(
+        function(convo) {
+          console.log("New conversation created");
+          MessageService.sendTestToConversation(convo, "message");
+        }
+      );
 
       return;
     }
