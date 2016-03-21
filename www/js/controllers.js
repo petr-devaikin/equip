@@ -151,80 +151,55 @@ angular.module('starter.controllers', [])
   }
 
 
-  $scope.startRecording = function(){
+  $scope.startRecording = function() {
     console.log('start recording');
     //recorder.record();
-    window.plugins.audioRecorderAPI.record(function(savedFilePath) {
+    if (window.plugins === undefined) {
+      console.log("WEB TEST: send to all");
+      MessageService.sendToAll("")
+        .then(function(convo) {
+          console.log(convo);
+        });
 
-    var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
-    var directory;
-
-
-
-    if (cordova.file.documentsDirectory) {
-      directory = cordova.file.documentsDirectory; // for iOS
-    } else {
-      directory = cordova.file.externalRootDirectory; // for Android
+      return;
     }
 
-    console.log(directory);
-    console.log(fileName);
+    window.plugins.audioRecorderAPI.record(function(savedFilePath) {
 
-    //base64 for parse
+      var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
+      var directory;
 
-    // abPathMessage = directory+"audioFileEquip.m4a";
-    //
-    // var file = new Media(abPathMessage);
-    //  var reader = new FileReader();
-    //  reader.onload = function(readerEvt) {
-    //         var binaryString = readerEvt.target.result;
-    //         console.log(btoa(binaryString));
-    //     };
-    //
-    //     reader.readAsBinaryString(file);
+      if (cordova.file.documentsDirectory) {
+        directory = cordova.file.documentsDirectory; // for iOS
+      } else {
+        directory = cordova.file.externalRootDirectory; // for Android
+      }
+
+      console.log(directory);
+      console.log(fileName);
 
 
+      $cordovaFile.copyFile(
+        cordova.file.dataDirectory, fileName,
+        directory, "audioFileEquip.m4a"
+      ).then(function (success) {
 
+        var buffer = $cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a");
+        console.log(buffer);
+        var bufferRead;
+        var fileReader = new FileReader();
+          fileReader.onload = function() {
+            bufferRead = this.result;
+          };
+          fileReader.readAsArrayBuffer(buffer);
+          console.log(bufferRead);
 
-
-    $cordovaFile.copyFile(
-      cordova.file.dataDirectory, fileName,
-      directory, "audioFileEquip.m4a"
-    ).then(function (success) {
-
-
-      //$cordovaFile.readFile(abPathMessage);
-      
-      var buffer = $cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a");
-      console.log(buffer);
-      var bufferRead;
-      var fileReader = new FileReader();
-        fileReader.onload = function() {
-          bufferRead = this.result;
-        };
-        fileReader.readAsArrayBuffer(buffer);
-        console.log(bufferRead);
-
-        // MessageService.sendToAll($cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a"))
-        //   .then(function() {
-        //     updateMessageList();
-        //   });
       }, function (error) {
         alert(JSON.stringify(error));
       });
-  }, function(msg) {
-    alert('ko: ' + msg);
-  }, 5);
-
-
-
-
-
-    //  var mp3URL = ("testEquip.mp3");
-      // var media = $cordovaMedia.newMedia(mp3URL, mediaSuccess, mediaError);
-      // media.startRecord();
-
-
+    }, function(msg) {
+      alert('ko: ' + msg);
+    }, 5);
   }
 
 

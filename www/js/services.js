@@ -19,6 +19,8 @@ angular.module('starter.services', [])
     },
     sendToAll: function(msgBs64) {
       console.log('send messagge to all request');
+
+      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id });
       //var fileP = new File("ciccio.txt");
 
       //var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
