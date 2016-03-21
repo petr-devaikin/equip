@@ -206,21 +206,17 @@ angular.module('starter.controllers', [])
   function getMediaURL(s) {
     if(device.platform.toLowerCase() === "android") return "/android_asset/www/" + s;
     return s;
-}
+  }
 
 
-function mediaError(e) {
-    alert('Media Error');
-    alert(JSON.stringify(e));
-}
+  function mediaError(e) {
+      alert('Media Error');
+      alert(JSON.stringify(e));
+  }
 
-function mediaSuccess() {
-    alert('Media Success');
-}
-
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateMessageList();
-  });
+  function mediaSuccess() {
+      alert('Media Success');
+  }
 
   $scope.updateLocation = function(newLocation) {
     console.log(newLocation);
