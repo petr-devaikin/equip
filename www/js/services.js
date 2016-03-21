@@ -17,18 +17,35 @@ angular.module('starter.services', [])
       console.log('get messages request sent to server');
       return query.find();
     },
-    sendToAll: function(msgBs64) {
-      console.log('send messagge to all request');
-      //var fileP = new File("ciccio.txt");
-
-      //var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
-      // var fileParse = new Parse.File('AFprova.m4a', msgBs64);
-      // console.log(msgBs64);
+    startConversationWithAll: function() {
+      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id });
+    },
+    startConversationWithGroup: function(group) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        group: group.id
+      });
+    },
+    startConversationWithLocation: function(location) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        location: location.id
+      });
+    },
+    sendTestToConversation: function(convo) {
+      var newMsg = new msgObj();
+      newMsg.set('fromUser', Parse.User.current());
+      newMsg.set('conversation', convo);
+      return newMsg.save();
+    },
+    sendToConversation: function(convo, msgBs64) {
+      console.log('send messagge to a conversation');
 
       var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
       return file.save().then(function(){
         var newMsg = new msgObj();
         newMsg.set('fromUser', Parse.User.current());
+        newMsg.set('conversation', convo);
         newMsg.set('audioContent', file);
         console.log("file saved on parse");
         return newMsg.save();
@@ -36,26 +53,6 @@ angular.module('starter.services', [])
         console.log("file saved error: " + error);
 
       });
-
-
-    },
-    sendToGroup: function(group, pathMessage) {
-      var audioFile = new File(pathMessage);
-      var fileParse = new Parse.File('AFprova.m4a',audioFile,'audioFile');
-      var newMsg = new msgObj();
-      newMsg.set('fromUser', Parse.User.current());
-      newMsg.set('toGroup', group);
-      newMsg.set('audioContent', fileParse);
-      return newMsg.save();
-    },
-    sendToLocation: function(location, pathMessage) {
-      var audioFile = new File(pathMessage);
-      var fileParse = new Parse.File('AFprova.m4a',audioFile,'audioFile');
-      var newMsg = new msgObj();
-      newMsg.set('fromUser', Parse.User.current());
-      newMsg.set('toLocation', location);
-      newMsg.set('audioContent', fileParse);
-      return newMsg.save();
     },
     getContentMessage: function(message){
       console.log('get audioFile');

@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "equip"
+    },
+    "equip": {
+      "applicationId": "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD"
+    }
+  }
+}

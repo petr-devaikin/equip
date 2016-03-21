@@ -28,7 +28,10 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
 
 
     //console.log(Media);
-    console.log(navigator.device.capture);
+    if (navigator.device)
+      console.log(navigator.device.capture);
+    else
+      console.log('NO CAPTURE');
 
   });
 })
