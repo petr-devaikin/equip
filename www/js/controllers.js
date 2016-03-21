@@ -154,54 +154,57 @@ angular.module('starter.controllers', [])
   $scope.startRecording = function() {
     console.log('start recording');
     //recorder.record();
-    if (window.plugins === undefined) {
-      console.log("WEB TEST: send to all");
-      MessageService.startConversationWithAll().then(
-        function(convo) {
-          console.log("New conversation created");
+
+    MessageService.startConversationWithAll().then(
+      function(convo) {
+        console.log("New conversation created");
+
+        if (window.plugins === undefined) {
+          console.log("Send test message from web");
           MessageService.sendTestToConversation(convo, "message");
         }
-      );
+        else {
+          window.plugins.audioRecorderAPI.record(function(savedFilePath) {
+            var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
+            var directory;
 
-      return;
-    }
+            if (cordova.file.documentsDirectory) {
+              directory = cordova.file.documentsDirectory; // for iOS
+            } else {
+              directory = cordova.file.externalRootDirectory; // for Android
+            }
 
-    window.plugins.audioRecorderAPI.record(function(savedFilePath) {
+            //console.log(directory);
+            //console.log(fileName);
 
-      var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
-      var directory;
+            $cordovaFile.copyFile(
+              cordova.file.dataDirectory, fileName,
+              directory, "audioFileEquip.m4a"
+            ).then(function (success) {
+              var allPath = directory+"audioFileEquip.m4a";
+              window.plugins.Base64.encodeFile(allPath, function(base64){
+                var base64Audio= base64.substring(34);
 
-      if (cordova.file.documentsDirectory) {
-        directory = cordova.file.documentsDirectory; // for iOS
-      } else {
-        directory = cordova.file.externalRootDirectory; // for Android
+                console.log('file base64 encoding: ' + base64Audio);
+
+                MessageService.sendToAll(base64Audio)
+                  .done(function() {
+                    updateMessageList();
+                    console.log('DONE message sent to all');
+                  })
+                  .fail(function(msg){
+                    console.log('FAIL message sent to all: '+msg);
+                  });
+              });
+            }, function (error) {
+              alert(JSON.stringify(error));
+            });
+          }, function(msg) {
+            alert('ko: ' + msg);
+          }, 5);
+        }
       }
-
-      console.log(directory);
-      console.log(fileName);
-
-
-      $cordovaFile.copyFile(
-        cordova.file.dataDirectory, fileName,
-        directory, "audioFileEquip.m4a"
-      ).then(function (success) {
-
-        var buffer = $cordovaFile.readAsArrayBuffer(directory,"audioFileEquip.m4a");
-        console.log(buffer);
-        var bufferRead;
-        var fileReader = new FileReader();
-          fileReader.onload = function() {
-            bufferRead = this.result;
-          };
-          fileReader.readAsArrayBuffer(buffer);
-          console.log(bufferRead);
-
-      }, function (error) {
-        alert(JSON.stringify(error));
-      });
-    }, function(msg) {
-      alert('ko: ' + msg);
-    }, 5);
+    );
   }
 
 
@@ -215,15 +218,26 @@ angular.module('starter.controllers', [])
   $scope.playMessage = function(message){
     console.log('play message');
 
+    var audioContentMsg = message.get('audioContent');
+    var url = audioContentMsg.url();
+    var myMedia = $cordovaMedia.newMedia(url);
+    myMedia.play(); // Android
+    console.log(url);
 
-    //MessageService.getContentMessage(message).then(function(audioFileEquip){
-    //});
+    // MessageService.getContentMessage(message)
+    // .done( function(url){
+    //   var myMedia = $cordovaMedia.newMedia(url);
+    //   myMedia.play(); // Android
+    // })
+    // .fail( function(msg){
+    //     console.log('FAIL message sent to all: '+msg);
+    // });
 
-    if (cordova.file.documentsDirectory) {
-      directory = cordova.file.documentsDirectory; // for iOS
-    } else {
-      directory = cordova.file.externalRootDirectory; // for Android
-    }
+    // if (cordova.file.documentsDirectory) {
+    //   directory = cordova.file.documentsDirectory; // for iOS
+    // } else {
+    //   directory = cordova.file.externalRootDirectory; // for Android
+    // }
 
 
 
@@ -234,8 +248,8 @@ angular.module('starter.controllers', [])
     //     alert(error);
     //   });
 
-    var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
-    myMedia.play(); // Android
+    // var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
+    // myMedia.play(); // Android
 
 
     // var mp3URL = getMediaURL("testEquip.mp3");

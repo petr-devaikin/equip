@@ -39,28 +39,29 @@ angular.module('starter.services', [])
       return newMsg.save();
     },
     sendToConversation: function(convo, msgBs64) {
-      console.log('send messagge to all request');
+      console.log('send messagge to a conversation');
 
+      var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
+      return file.save().then(function(){
+        var newMsg = new msgObj();
+        newMsg.set('fromUser', Parse.User.current());
+        newMsg.set('conversation', convo);
+        newMsg.set('audioContent', file);
+        console.log("file saved on parse");
+        return newMsg.save();
+      }, function(error){
+        console.log("file saved error: " + error);
 
-      //var fileP = new File("ciccio.txt");
-
-      //var buffer = $cordovaFile.readAsDataURL(cordova.file.externalRootDirectory,pathMessage);
-      var fileParse = new Parse.File('AFprova.m4a', msgBs64);
-      console.log(msgBs64);
-
-      //var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
-      var newMsg = new msgObj();
-      newMsg.set('fromUser', Parse.User.current());
-      newMsg.set('conversation', convo);
-      newMsg.set('audioContent', fileParse);
-      return newMsg.save();
+      });
     },
-    getContentMessage: function(msgId){
+    getContentMessage: function(message){
       console.log('get audioFile');
-      var query = new Parse.Query(msgObj);
-      query.exists('audioContent');
-      query.equalTo('Message', msgId);
-      return query.get('audioContent');
+      var audioContentMsg = message.get('audioContent');
+      var url = audioContentMsg.url();
+      console.log(url);
+      return url;
+      // query.exists('audioContent');
+      // return query.get('audioContent');
     }
 
   };

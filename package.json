@@ -21,7 +21,12 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    "org.apache.cordova.media"
+    "org.apache.cordova.media",
+    "org.apache.cordova.device",
+    {
+      "locator": "https://github.com/hazemhagrass/phonegap-base64.git",
+      "id": "com-badrit-base64"
+    }
   ],
   "cordovaPlatforms": [
     "ios",
