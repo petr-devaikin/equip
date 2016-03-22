@@ -90,7 +90,7 @@ angular.module('starter.controllers', [])
 
   function updateMessageList() {
     MessageService.all().then(function(data) {
-      $scope.messages = data.slice(0, 1);
+      $scope.messages = data;
       $scope.$apply();
     });
   }
