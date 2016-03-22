@@ -37,60 +37,13 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture,$cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia ) {
-
-
-  //var src = '/sound/test.mp3';
-  //var media = $cordovaMedia.newMedia(src);
-  //media.seekTo(5000); // milliseconds value
-
-  //var src = "myrecording.mp3";
-  //var mediaRec = $cordovaMedia.newMedia(src, mediaSuccess, mediaError);
-
-  // $cordovaNativeAudio.preloadSimple('click', 'sound/audioFileEquip.m4a')
-  //   .then(function (msg) {
-  //     console.log(msg);
-  //   }, function (error) {
-  //     alert(error);
-  //   });
-
-  var recorder = new Object;
-
-  recorder.stop = function() {
-    window.plugins.audioRecorderAPI.stop(function(msg) {querySelector('query')
-      // success
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
-    });
-  }
-
-  recorder.playback = function() {
-    window.plugins.audioRecorderAPI.playback(function(msg) {
-      // complete
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
-    });
-  }
-
-  recorder.record = function() {
-    window.plugins.audioRecorderAPI.record(function(msg) {
-      // complete
-      recorder.playback();
-      console.log('ok: ' + msg);
-    }, function(msg) {
-      // failed
-      console.log('ko: ' + msg);
-    }); // record 30 seconds
-  }
-
-
-  function updateMessageList() {
-    MessageService.all().then(function(data) {
-      $scope.messages = data;
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia) {
+  function updateConversationList() {
+    MessageService.allConversations().then(function(data) {
+      data.sort(function(a, b) {
+        return new Date(b.conversation.attributes.createdAt) - new Date(a.conversation.attributes.createdAt);
+      });
+      $scope.conversations = data;
       $scope.$apply();
     });
   }
@@ -116,11 +69,11 @@ angular.module('starter.controllers', [])
   var updateTimer = undefined;
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateMessageList();
+    updateConversationList();
     checkLocation();
 
     updateTimer = setInterval(function() {
-      updateMessageList();
+      updateConversationList();
       checkLocation();
     }, 10000);
   });
@@ -129,153 +82,130 @@ angular.module('starter.controllers', [])
     clearInterval(updateTimer);
   });
 
-  $scope.sendToAll = function(pathMessage) {
-    MessageService.sendToAll(pathMessage)
+  $scope.sendToConversation = function(convo) {
+    /*MessageService.sendToLocation(location, "")
       .then(function() {
         updateMessageList();
-      });
+      });*/
   }
 
-  $scope.sendToGroup = function(group) {
-    MessageService.sendToGroup(group, "")
-      .then(function() {
-        updateMessageList();
-      });
+  function sendMessageToConversation(convo, msg) {
+    if (msg === undefined)
+      MessageService.sendTestToConversation(convo)
+        .done(function() {
+          updateConversationList();
+          console.log('DONE test message sent to all');
+        })
+        .fail(function(msg){
+          console.log('FAIL test message sent to all: '+msg);
+        });
+    else
+      MessageService.sendToConversation(convo, base64Audio)
+        .done(function() {
+          updateConversationList();
+          console.log('DONE message sent to all');
+        })
+        .fail(function(msg){
+          console.log('FAIL message sent to all: '+msg);
+        });
   }
 
-  $scope.sendToLocation = function(location) {
-    MessageService.sendToLocation(location, "")
-      .then(function() {
-        updateMessageList();
-      });
-  }
-
-
-  $scope.startRecording = function() {
-    console.log('start recording');
-    //recorder.record();
-
+  function startConversationWithMessage(msg) {
     MessageService.startConversationWithAll().then(
       function(convo) {
         console.log("New conversation created");
-
-        if (window.plugins === undefined) {
-          console.log("Send test message from web");
-          MessageService.sendTestToConversation(convo, "message");
-        }
-        else {
-          window.plugins.audioRecorderAPI.record(function(savedFilePath) {
-            var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
-            var directory;
-
-            if (cordova.file.documentsDirectory) {
-              directory = cordova.file.documentsDirectory; // for iOS
-            } else {
-              directory = cordova.file.externalRootDirectory; // for Android
-            }
-
-            //console.log(directory);
-            //console.log(fileName);
-
-            $cordovaFile.copyFile(
-              cordova.file.dataDirectory, fileName,
-              directory, "audioFileEquip.m4a"
-            ).then(function (success) {
-              var allPath = directory+"audioFileEquip.m4a";
-              window.plugins.Base64.encodeFile(allPath, function(base64){
-                var base64Audio= base64.substring(34);
-
-                console.log('file base64 encoding: ' + base64Audio);
-
-                MessageService.sendToConversation(convo, base64Audio)
-                  .done(function() {
-                    updateMessageList();
-                    console.log('DONE message sent to all');
-                  })
-                  .fail(function(msg){
-                    console.log('FAIL message sent to all: '+msg);
-                  });
-              });
-            }, function (error) {
-              alert(JSON.stringify(error));
-            });
-          }, function(msg) {
-            alert('ko: ' + msg);
-          }, 5);
-        }
+        sendMessageToConversation(convo, msg);
       }
     );
   }
 
+  function recordMessage(callback) {
+    window.plugins.audioRecorderAPI.record(function (savedFilePath) {
+      var fileName = savedFilePath.split('/')[savedFilePath.split('/').length - 1];
+      var directory;
 
-  $scope.stopRecording = function(){
-    console.log('stop recording');
+      if (cordova.file.documentsDirectory) {
+        directory = cordova.file.documentsDirectory; // for iOS
+      } else {
+        directory = cordova.file.externalRootDirectory; // for Android
+      }
+
+      //console.log(directory);
+      //console.log(fileName);
+
+      $cordovaFile.copyFile(
+        cordova.file.dataDirectory, fileName,
+        directory, "audioFileEquip.m4a"
+      ).then(function (success) {
+        var allPath = directory+"audioFileEquip.m4a";
+        window.plugins.Base64.encodeFile(allPath, function(base64){
+          var base64Audio= base64.substring(34);
+
+          console.log('file base64 encoding: ' + base64Audio);
+          callback(base64Audio);
+        });
+      }, function (error) {
+        alert(JSON.stringify(error));
+      });
+    }, function(msg) {
+      alert('ko: ' + msg);
+    }, 5);
+  }
+
+  $scope.startConversation = function() {
+    console.log('start recording for a new conversation');
+
+    if (window.plugins === undefined) {
+      console.log("Send test message from web");
+      startConversationWithMessage();
+    }
+    else {
+      recordMessage(function(base64Audio) {
+        startConversationWithMessage(base64Audio);
+      });
+    }
+  }
+
+
+  $scope.stopConversation = function(){
+    console.log('stop recording for a new conversation');
     //recorder.stop();
     //media.stopRecord();
     //media.release();
+  }
+
+  $scope.startReply = function(convo) {
+    console.log('start recording for an existing conversation: ' + convo.id);
+
+    if (window.plugins === undefined) {
+      console.log("Send test message from web");
+      sendMessageToConversation(convo);
+    }
+    else {
+      recordMessage(function(base64Audio) {
+        sendMessageToConversation(convo, base64Audio);
+      });
+    }
+  }
+
+  $scope.stopReply = function(convo) {
+    console.log('stop recording for an existing conversation: ' + convo.id);
   }
 
   $scope.playMessage = function(message){
     console.log('play message');
 
     var audioContentMsg = message.get('audioContent');
-    var url = audioContentMsg.url();
-    var myMedia = $cordovaMedia.newMedia(url);
-    myMedia.play(); // Android
-    console.log(url);
-
-    // MessageService.getContentMessage(message)
-    // .done( function(url){
-    //   var myMedia = $cordovaMedia.newMedia(url);
-    //   myMedia.play(); // Android
-    // })
-    // .fail( function(msg){
-    //     console.log('FAIL message sent to all: '+msg);
-    // });
-
-    // if (cordova.file.documentsDirectory) {
-    //   directory = cordova.file.documentsDirectory; // for iOS
-    // } else {
-    //   directory = cordova.file.externalRootDirectory; // for Android
-    // }
-
-
-
-    // $cordovaNativeAudio.preloadSimple('click', 'audioFileEquip.m4a')
-    //   .then(function (msg) {
-    //     console.log(msg);
-    //   }, function (error) {
-    //     alert(error);
-    //   });
-
-    // var myMedia = $cordovaMedia.newMedia(directory+"audioFileEquip.m4a");
-    // myMedia.play(); // Android
-
-
-    // var mp3URL = getMediaURL("testEquip.mp3");
-    // var media = $cordovaMedia.newMedia(mp3URL, mediaSuccess, mediaError);
-    // media.play();
+    if (audioContentMsg === undefined)
+      console.log('Empty message');
+    else {
+      var url = audioContentMsg.url();
+      console.log(url);
+      var myMedia = $cordovaMedia.newMedia(url);
+      myMedia.play(); // Android
+    }
 
   }
-
-  function getMediaURL(s) {
-    if(device.platform.toLowerCase() === "android") return "/android_asset/www/" + s;
-    return s;
-}
-
-
-function mediaError(e) {
-    alert('Media Error');
-    alert(JSON.stringify(e));
-}
-
-function mediaSuccess() {
-    alert('Media Success');
-}
-
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateMessageList();
-  });
 
   $scope.updateLocation = function(newLocation) {
     console.log(newLocation);
