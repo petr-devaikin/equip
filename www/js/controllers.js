@@ -48,6 +48,20 @@ angular.module('starter.controllers', [])
     });
   }
 
+  function updateLocationList() {
+    LocationService.all().then(function(locations) {
+      $scope.locations = locations;
+      $scope.$apply();
+    })
+  }
+
+  function updateDestinationList() {
+    LocationService.all().then(function(locations) {
+      $scope.destinations = locations;
+      $scope.$apply();
+    })
+  }
+
   function checkLocation() {
     PeopleService.currentUser().then(function(user) {
       $scope.lastLocation = user.attributes.lastLocation;
@@ -56,10 +70,7 @@ angular.module('starter.controllers', [])
         (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 30;
 
       if ($scope.askForLocation) {
-        LocationService.all().then(function(locations) {
-          $scope.locations = locations;
-          $scope.$apply();
-        })
+        updateLocationList();
       }
       else
         $scope.$apply();
@@ -90,7 +101,7 @@ angular.module('starter.controllers', [])
   }
 
   function sendMessageToConversation(convo, msg) {
-    if (msg === undefined)
+    if (msg === undefined || msg == 'undefined')
       MessageService.sendTestToConversation(convo)
         .done(function() {
           updateConversationList();
@@ -100,23 +111,22 @@ angular.module('starter.controllers', [])
           console.log('FAIL test message sent to all: '+msg);
         });
     else
-      MessageService.sendToConversation(convo, base64Audio)
+      MessageService.sendToConversation(convo, msg)
         .done(function() {
           updateConversationList();
           console.log('DONE message sent to all');
         })
-        .fail(function(msg){
-          console.log('FAIL message sent to all: '+msg);
+        .fail(function(error){
+          console.log('FAIL message sent to all: '+error);
         });
   }
 
   function startConversationWithMessage(msg) {
-    MessageService.startConversationWithAll().then(
-      function(convo) {
-        console.log("New conversation created");
-        sendMessageToConversation(convo, msg);
-      }
-    );
+    $scope.newCoversationInProgress = true;
+    window.localStorage['newMessage'] = msg;
+    updateLocationList();
+    updateDestinationList();
+    //$scope.$apply();
   }
 
   function recordMessage(callback) {
@@ -172,6 +182,25 @@ angular.module('starter.controllers', [])
     //recorder.stop();
     //media.stopRecord();
     //media.release();
+  }
+
+  $scope.sendConversation = function(newLocation, convoDestination) {
+    console.log(newLocation);
+    console.log(convoDestination);
+
+    // update location
+    $scope.updateLocation(newLocation);
+
+    // create new conversation
+    var msg = window.localStorage["newMessage"];
+    MessageService.startConversationWithAll().then(
+      function(convo) {
+        console.log("New conversation created");
+        sendMessageToConversation(convo, msg);
+      }
+    );
+
+    $scope.newCoversationInProgress = false;
   }
 
   $scope.startReply = function(convo) {
