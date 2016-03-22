@@ -17,6 +17,7 @@ Parse.Cloud.define("startConversation", function(request, response) {
             var newConvo = new convoObj();
             console.log(author);
             newConvo.set("startedBy", author);
+            newConvo.set("fromLocation", author.attributes.lastLocation);
             newConvo.save().then(
                 function (convo) {
                     var query = new Parse.Query(userObj);
@@ -56,6 +57,7 @@ Parse.Cloud.define("getConversations", function(request, response) {
     var convoObj = Parse.Object.extend("Conversation");
     var userConvoObj = Parse.Object.extend("UserConversation");
     var userObj = Parse.Object.extend("User");
+    var messageObj = Parse.Object.extend("Message");
 
     var list = [];
 
@@ -74,12 +76,17 @@ Parse.Cloud.define("getConversations", function(request, response) {
                     convo.include("toLocation");
                     return convo.get(userConvo.attributes.conversation.id)
                         .then(function(c) {
-                            list.push(c);
+                            var msgQuery = new Parse.Query(messageObj);
+                            msgQuery.equalTo("conversation", c);
+                            msgQuery.include("fromUser");
+                            msgQuery.include("fromLocation");
+                            return msgQuery.find().then(function (messages) {
+                                list.push({ conversation: c, messages: messages });
+                            });
                         });
                 })
                 .then(
                     function () {
-                        list.sort(function(a, b) { return b.createdAt - a.createdAt; });
                         response.success(list);
                     },
                     function (error) {

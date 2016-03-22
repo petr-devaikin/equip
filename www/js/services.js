@@ -38,23 +38,23 @@ angular.module('starter.services', [])
         location: location.id
       });
     },
-    sendTestToConversation: function(convo) {
+    sendTestToConversation: function(convo, file) {
       var newMsg = new msgObj();
-      newMsg.set('fromUser', Parse.User.current());
+      var user = Parse.User.current();
+      newMsg.set('fromUser', user);
       newMsg.set('conversation', convo);
+      if (file !== undefined)
+        newMsg.set('audioContent', file);
+      newMsg.set('fromLocation', user.attributes.lastLocation);
       return newMsg.save();
     },
     sendToConversation: function(convo, msgBs64) {
       console.log('send messagge to a conversation');
 
       var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
-      return file.save().then(function(){
-        var newMsg = new msgObj();
-        newMsg.set('fromUser', Parse.User.current());
-        newMsg.set('conversation', convo);
-        newMsg.set('audioContent', file);
+      return file.save().then(function() {
         console.log("file saved on parse");
-        return newMsg.save();
+        return sendTestToConversation(convo, file);
       }, function(error){
         console.log("file saved error: " + error);
 
