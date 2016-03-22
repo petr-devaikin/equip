@@ -33,9 +33,36 @@
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <button class="button" style="border-radius: 52px; height: 52px; position: relative; left: 50%; margin-left: -107px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
+    <button class="button" ng-show="!newCoversationInProgress" style="border-radius: 52px; height: 52px; position: relative; left: 50%; margin-left: -107px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
       START CONVERSATION
     </button>
+    <div ng-show="newCoversationInProgress" class="card">
+      <div class="item item-divider">
+        Creating New Conversation
+      </div>
+      <div class="item">
+        Message info here
+      </div>
+      <div class="item">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            I'm currently at
+          </div>
+          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation"></select>
+        </label>
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Send a message to
+          </div>
+          <select ng-options="dest as dest.attributes.name for dest in destinations" ng-model="convoDestination"></select>
+        </label>
+      </div>
+      <div class="item item-divider" ng-click="sendConversation(newLocation, convoDestination)">
+        <button class="button button-balanced">
+          Send!
+        </button>
+      </div>
+    </div>
 
     <div class="card" ng-repeat="convo in conversations">
       <div ng-show="convo.conversation.attributes.toGroup" class="item item-divider">
