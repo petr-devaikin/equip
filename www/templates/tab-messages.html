@@ -48,21 +48,20 @@
           <div class="input-label">
             I'm currently at
           </div>
-          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation"></select>
+          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation"></select>
         </label>
         Send a message to
         <label class="item item-input item-select">
           <ion-list>
-            <ion-radio ng-model="choice" ng-value="dest" ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
+            <ion-radio ng-model="newConvoParams.convoDestination" ng-value="dest" ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
               <span ng-show="dest.entity.className == 'Group'">GROUP:</span>
               <span ng-show="dest.entity.className == 'Location'">LOCATION:</span>
               {{ dest.name }}
             </ion-radio>
           </ion-list>
-          <select ng-options="dest as dest.attributes.name for dest in destinations" ng-model="convoDestination"></select>
         </label>
       </div>
-      <div class="item item-divider" ng-click="sendConversation(newLocation, convoDestination)">
+      <div class="item item-divider" ng-click="sendConversation()">
         <button class="button button-balanced">
           Send!
         </button>

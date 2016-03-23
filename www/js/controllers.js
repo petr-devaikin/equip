@@ -58,7 +58,6 @@ angular.module('starter.controllers', [])
   function updateDestinationList() {
     MessageService.getReceivers().then(function(receivers) {
       $scope.destinations = receivers;
-      console.log(receivers);
       $scope.$apply();
     })
   }
@@ -124,6 +123,8 @@ angular.module('starter.controllers', [])
 
   function startConversationWithMessage(msg) {
     $scope.newCoversationInProgress = true;
+    $scope.newConvoParams = {}
+
     window.localStorage['newMessage'] = msg;
     updateLocationList();
     updateDestinationList();
@@ -185,18 +186,34 @@ angular.module('starter.controllers', [])
     //media.release();
   }
 
-  $scope.sendConversation = function(newLocation, convoDestination) {
+  $scope.sendConversation = function() {
     // update location
-    $scope.updateLocation(newLocation);
+    $scope.updateLocation($scope.newConvoParams.newLocation);
 
     // create new conversation
     var msg = window.localStorage["newMessage"];
-    MessageService.startConversationWithAll().then(
-      function(convo) {
-        console.log("New conversation created");
-        sendMessageToConversation(convo, msg);
-      }
-    );
+    console.log($scope.newConvoParams.convoDestination);
+    if ($scope.newConvoParams.convoDestination.entity == null)
+      MessageService.startConversationWithAll().then(
+        function(convo) {
+          console.log("New conversation with all created");
+          sendMessageToConversation(convo, msg);
+        }
+      );
+    else if ($scope.newConvoParams.convoDestination.entity.className == 'Group')
+      MessageService.startConversationWithGroup($scope.newConvoParams.convoDestination.entity).then(
+        function(convo) {
+          console.log("New conversation with group created");
+          sendMessageToConversation(convo, msg);
+        }
+      );
+    else
+      MessageService.startConversationWithLocation($scope.newConvoParams.convoDestination.entity).then(
+        function(convo) {
+          console.log("New conversation with location created");
+          sendMessageToConversation(convo, msg);
+        }
+      );
 
     $scope.newCoversationInProgress = false;
   }

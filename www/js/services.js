@@ -31,6 +31,18 @@ angular.module('starter.services', [])
         location: location.id
       });
     },
+    startConversationWithGroup: function(group) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        group: group.id
+      });
+    },
+    startConversationWithLocation: function(location) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        location: location.id
+      });
+    },
     sendTestToConversation: function(convo, file) {
       var newMsg = new msgObj();
       var user = Parse.User.current();
