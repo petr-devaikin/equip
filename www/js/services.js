@@ -13,18 +13,23 @@ angular.module('starter.services', [])
     /*getConversation: function(convoId) {
       return
     },*/
-    all: function() {
-      var query = new Parse.Query(msgObj);
-      query.include('fromUser');
-      query.include('fromUser');
-      query.include('toGroup');
-      query.include('toLocation');
-      query.descending('createdAt');
-      console.log('get messages request sent to server');
-      return query.find();
+    getReceivers: function() {
+      return Parse.Cloud.run('getReceiverList', { user: Parse.User.current().id });
     },
     startConversationWithAll: function() {
       return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id });
+    },
+    startConversationWithGroup: function(group) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        group: group.id
+      });
+    },
+    startConversationWithLocation: function(location) {
+      return Parse.Cloud.run('startConversation', {
+        startedBy: Parse.User.current().id,
+        location: location.id
+      });
     },
     startConversationWithGroup: function(group) {
       return Parse.Cloud.run('startConversation', {
