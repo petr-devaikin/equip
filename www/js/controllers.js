@@ -56,8 +56,9 @@ angular.module('starter.controllers', [])
   }
 
   function updateDestinationList() {
-    LocationService.all().then(function(locations) {
-      $scope.destinations = locations;
+    MessageService.getReceivers().then(function(receivers) {
+      $scope.destinations = receivers;
+      console.log(receivers);
       $scope.$apply();
     })
   }
@@ -185,9 +186,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.sendConversation = function(newLocation, convoDestination) {
-    console.log(newLocation);
-    console.log(convoDestination);
-
     // update location
     $scope.updateLocation(newLocation);
 
@@ -237,7 +235,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.updateLocation = function(newLocation) {
-    console.log(newLocation);
     if (newLocation !== null)
       LocationService.updateLocation(newLocation).then(function() {
         checkLocation();

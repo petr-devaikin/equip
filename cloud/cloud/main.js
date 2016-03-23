@@ -74,6 +74,7 @@ Parse.Cloud.define("getConversations", function(request, response) {
                     convo.include("startedBy");
                     convo.include("toGroup");
                     convo.include("toLocation");
+                    console.log("get info for convo: " + convo.id);
                     return convo.get(userConvo.attributes.conversation.id)
                         .then(function(c) {
                             var msgQuery = new Parse.Query(messageObj);
@@ -94,8 +95,104 @@ Parse.Cloud.define("getConversations", function(request, response) {
                     }
                 );
         },
-        function (error) {
-            response.error("cannot get user");
+        function (obj, error) {
+            response.error("cannot get user: " + error);
+        }
+    );
+});
+
+Parse.Cloud.define("getReceiverList", function(request, response) {
+    var groupObj = Parse.Object.extend("Group");
+    var userGroupObj = Parse.Object.extend("UserGroup");
+    var userObj = Parse.Object.extend("User");
+    var locationObj = Parse.Object.extend("Location");
+
+    var receivers = [];
+    receivers.push({
+        name: "All",
+        featured: true,
+        entity: null
+    });
+
+    var user = new userObj();
+    user.id = request.params.user;
+    user.fetch().then(
+        function(user) {
+            var query = new Parse.Query(groupObj);
+            query.find().then(
+                function(allGroups) {
+                    var groups = {}
+                    for (var i = 0; i < allGroups.length; i++)
+                        groups[allGroups[i].id] = {
+                            name: allGroups[i].attributes.name,
+                            featured: false,
+                            entity: allGroups[i]
+                        }
+
+                    var query = new Parse.Query(userGroupObj);
+                    query.equalTo("user", user);
+                    query.find().then(
+                        function(userGroups) {
+                            for (var i = 0; i < userGroups.length; i++)
+                                groups[userGroups[i].attributes.group.id].featured = true;
+
+                            var groupArray = [];
+                            for (var i in groups)
+                                groupArray.push(groups[i]);
+
+                            groupArray.sort(function(a, b) {
+                                if (a.featured && !b.featured)
+                                    return -1;
+                                else if (!a.featured && b.featured)
+                                    return 1;
+                                else
+                                    return a.entity.attributes.name - b.entity.attributes.name;
+                            });
+
+                            var query = new Parse.Query(locationObj);
+                            query.find().then(
+                                function(allLocations) {
+                                    var locations = [];
+                                    for (var i = 0; i < allLocations.length; i++) {
+                                        locations.push({
+                                            name: allLocations[i].attributes.name,
+                                            featured: allLocations[i].id == user.attributes.lastLocation.id,
+                                            entity: allLocations[i]
+                                        });
+                                    }
+
+                                    locations.sort(function(a, b) {
+                                        if (a.featured && !b.featured)
+                                            return -1;
+                                        else if (!a.featured && b.featured)
+                                            return 1;
+                                        else
+                                            return a.entity.attributes.name - b.entity.attributes.name;
+                                    });
+
+                                    receivers.push(locations[0]);
+                                    receivers = receivers.concat(groupArray.slice(0, userGroups.length));
+                                    receivers = receivers.concat(locations.slice(1));
+                                    receivers = receivers.concat(groupArray.slice(userGroups.length));
+
+                                    response.success(receivers);
+                                },
+                                function(error) {
+                                    response.error("cannot get all location list");
+                                }
+                            );
+                        },
+                        function(error) {
+                            response.error("cannot get groups of user");
+                        }
+                    );
+                },
+                function(error) {
+                    response.error("cannot get all group list");
+                });
+        },
+        function(error) {
+            response.error("cannot get user: " + error);
         }
     );
 });

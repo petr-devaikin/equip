@@ -50,10 +50,15 @@
           </div>
           <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation"></select>
         </label>
+        Send a message to
         <label class="item item-input item-select">
-          <div class="input-label">
-            Send a message to
-          </div>
+          <ion-list>
+            <ion-radio ng-model="choice" ng-value="dest" ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
+              <span ng-show="dest.entity.className == 'Group'">GROUP:</span>
+              <span ng-show="dest.entity.className == 'Location'">LOCATION:</span>
+              {{ dest.name }}
+            </ion-radio>
+          </ion-list>
           <select ng-options="dest as dest.attributes.name for dest in destinations" ng-model="convoDestination"></select>
         </label>
       </div>
