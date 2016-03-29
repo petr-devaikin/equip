@@ -49,7 +49,8 @@
           <div class="input-label">
             I'm currently at
           </div>
-          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation"></select>
+          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation" ng-selected="selected">
+          </select>
         </label>
         Send a message to
         <ion-slide-box on-slide-changed="destinationChanged($index)" class="padding">

@@ -9,6 +9,7 @@ function saveConvo(author, response, group, location) {
     var userObj = Parse.Object.extend("User");
     var userConvoObj = Parse.Object.extend("UserConversation");
     var convoObj = Parse.Object.extend("Conversation");
+    var userGroupObj = Parse.Object.extend("UserGroup");
 
     var newConvo = new convoObj();
     newConvo.set("startedBy", author);
@@ -17,30 +18,91 @@ function saveConvo(author, response, group, location) {
     if (group !== undefined)
         newConvo.set("toGroup", group);
 
-    if (location != undefined)
+    if (location !== undefined)
         newConvo.set("toLocation", location);
 
     newConvo.save().then(
         function (convo) {
-            // ADD GROUP PARTICIPANT
-            // ADD PEOPLE IN LOCATION
+            if (group !== undefined) {
+                var query = new Parse.Query(userGroupObj);
+                query.equalTo("group", group);
+                query.include("user");
 
-            var query = new Parse.Query(userObj);
-            query.find().then(
-                function (users) {
-                    for (var i = 0; i < users.length; i++) {
-                        var newUserConvo = new userConvoObj();
-                        newUserConvo.set("user", users[i]);
-                        newUserConvo.set("conversation", convo);
-                        newUserConvo.save();
+                var authorFound = false;
+
+                query.find().then(
+                    function (userGroups) {
+                        for (var i = 0; i < userGroups.length; i++) {
+                            if (userGroups[i].attributes.user.id == author.id)
+                                authorFound = true;
+
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", userGroups[i].attributes.user);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        // add author if he is not in the group
+                        if (!authorFound) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", author);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
                     }
-
-                    response.success(newConvo);
-                },
-                function (error) {
-                    response.error("cannot get user list");
+                );
+            }
+            else if (location !== undefined) {
+                // add author if he is not at the location
+                if (location.id != author.attributes.lastLocation.id) {
+                    var newUserConvo = new userConvoObj();
+                    newUserConvo.set("user", author);
+                    newUserConvo.set("conversation", convo);
+                    newUserConvo.save();
                 }
-            );
+
+                // add others at location
+                var query = new Parse.Query(userObj);
+                query.equalTo("lastLocation", location);
+                query.find().then(
+                    function (users) {
+                        for (var i = 0; i < users.length; i++) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", users[i]);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
+                    }
+                );
+            }
+            else {
+                var query = new Parse.Query(userObj);
+                query.find().then(
+                    function (users) {
+                        for (var i = 0; i < users.length; i++) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", users[i]);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
+                    }
+                );
+            }
         },
         function (error) {
             console.log(error);

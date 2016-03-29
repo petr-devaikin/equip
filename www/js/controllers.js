@@ -83,6 +83,7 @@ angular.module('starter.controllers', [])
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateConversationList();
+    updateLocationList();
     checkLocation();
 
     updateTimer = setInterval(function() {
@@ -125,14 +126,23 @@ angular.module('starter.controllers', [])
 
   function startConversationWithMessage(msg) {
     $scope.newCoversationInProgress = true;
+
     $scope.newConvoParams = {
       destinationId: 0
+    }
+
+    for (var i = 0; i < $scope.locations.length; i++) {
+      console.log($scope.locations[i].id);
+      console.log($scope.lastLocation);
+      if ($scope.locations[i].id == $scope.lastLocation.id) {
+        $scope.newConvoParams.newLocation = $scope.locations[i];
+        break;
+      }
     }
 
     $ionicSlideBoxDelegate.slide(0);
 
     window.localStorage['newMessage'] = msg;
-    updateLocationList();
     updateDestinationList();
     //$scope.$apply();
   }
