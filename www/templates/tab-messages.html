@@ -36,6 +36,7 @@
     <button class="button" ng-show="!newCoversationInProgress" style="border-radius: 52px; height: 52px; position: relative; left: 50%; margin-left: -107px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
       START CONVERSATION
     </button>
+
     <div ng-show="newCoversationInProgress" class="card">
       <div class="item item-divider">
         Creating New Conversation
@@ -51,18 +52,16 @@
           <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation"></select>
         </label>
         Send a message to
-        <label class="item item-input item-select">
-          <ion-list>
-            <ion-radio ng-model="newConvoParams.convoDestination" ng-value="dest" ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
-              <span ng-show="dest.entity.className == 'Group'">GROUP:</span>
-              <span ng-show="dest.entity.className == 'Location'">LOCATION:</span>
+        <ion-slide-box on-slide-changed="destinationChanged($index)" class="padding">
+          <ion-slide ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
+            <span ng-show="dest.entity.className == 'Group'">GROUP:</span>
+            <span ng-show="dest.entity.className == 'Location'">LOCATION:</span>
               {{ dest.name }}
-            </ion-radio>
-          </ion-list>
-        </label>
+          </ion-slide>
+        </ion-slide-box>
       </div>
-      <div class="item item-divider" ng-click="sendConversation()">
-        <button class="button button-balanced">
+      <div class="item item-divider">
+        <button class="button button-balanced" ng-click="sendConversation();">
           Send!
         </button>
       </div>
@@ -70,7 +69,7 @@
 
     <div class="card" ng-repeat="convo in conversations">
       <div ng-show="convo.conversation.attributes.toGroup" class="item item-divider">
-        GROUP: {{ convo.attributes.toGroup.attributes.name }}
+        <i class="icon ion-ios-people"></i> {{ convo.conversation.attributes.toGroup.attributes.name }}
       </div>
       <div ng-show="convo.conversation.attributes.toLocation" class="item item-divider">
         <i class="icon ion-location"></i> {{ convo.conversation.attributes.toLocation.attributes.name }}
@@ -108,29 +107,5 @@
         </span>
       </a>
     </div>
-
-    <!--div class="card" ng-repeat="message in messages">
-      <div ng-show="message.attributes.toGroup" class="item item-divider">
-        GROUP: {{ message.attributes.toGroup.attributes.name }}
-      </div>
-      <div ng-show="message.attributes.toLocation" class="item item-divider">
-        <i class="icon ion-location"></i> {{ message.attributes.toLocation.attributes.name }}
-      </div>
-      <div ng-show="message.attributes.toLocation === undefined && message.attributes.toGroup === undefined" class="item item-divider" style="background: #beeced;">
-        ALL (BROADCAST)
-        <span style="float: right;">1 NEW MESSAGE</span>
-      </div>
-
-      <div class="item item-text-wrap item-icon-left">
-        <i class="icon ion-play" ng-click="playMessage(message)" ></i>
-        <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
-        from
-        <span style="font-weight: bold; text-transform: uppercase;">STAGE</span>
-        at
-        <span style="font-weight: bold; text-transform: uppercase;">
-          {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
-        </span>
-      </div>
-    </div-->
   </ion-content>
 </ion-view>

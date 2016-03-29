@@ -5,7 +5,7 @@ Parse.Cloud.define("hello", function(request, response) {
     response.success("Hello world!");
 });
 
-function saveConvo(author, response, group, locationId) {
+function saveConvo(author, response, group, location) {
     var userObj = Parse.Object.extend("User");
     var userConvoObj = Parse.Object.extend("UserConversation");
     var convoObj = Parse.Object.extend("Conversation");
@@ -13,6 +13,12 @@ function saveConvo(author, response, group, locationId) {
     var newConvo = new convoObj();
     newConvo.set("startedBy", author);
     newConvo.set("fromLocation", author.attributes.lastLocation);
+
+    if (group !== undefined)
+        newConvo.set("toGroup", group);
+
+    if (location != undefined)
+        newConvo.set("toLocation", location);
 
     newConvo.save().then(
         function (convo) {
@@ -46,16 +52,18 @@ function saveConvo(author, response, group, locationId) {
 Parse.Cloud.define("startConversation", function(request, response) {
     var userObj = Parse.Object.extend("User");
     var groupObj = Parse.Object.extend("Group");
+    var locationObj = Parse.Object.extend("Location");
 
     var author = new userObj();
     author.id = request.params.startedBy;
     author.fetch().then(
         function (author) {
-            if (request.group !== undefined) {
+            if (request.params.group !== undefined) {
                 var group = new groupObj();
-                group.id = request.group;
+                group.id = request.params.group;
                 group.fetch().then(
                     function(group) {
+                        console.log("start convo to group");
                         saveConvo(author, response, group);
                     },
                     function(error) {
@@ -63,8 +71,18 @@ Parse.Cloud.define("startConversation", function(request, response) {
                     }
                 );
             }
-            else if (request.location !== undefined) {
-                saveConvo(author, response, undefined, request.location);
+            else if (request.params.location !== undefined) {
+                var location = new locationObj();
+                location.id = request.params.location;
+                location.fetch().then(
+                    function(location) {
+                        console.log("start convo to location");
+                        saveConvo(author, response, undefined, location);
+                    },
+                    function(error) {
+                        response.error("cannot get location info");
+                    }
+                );
             }
             else
                 saveConvo(author, response);
@@ -98,7 +116,6 @@ Parse.Cloud.define("getConversations", function(request, response) {
                     convo.include("startedBy");
                     convo.include("toGroup");
                     convo.include("toLocation");
-                    console.log("get info for convo: " + convo.id);
                     return convo.get(userConvo.attributes.conversation.id)
                         .then(function(c) {
                             var msgQuery = new Parse.Query(messageObj);

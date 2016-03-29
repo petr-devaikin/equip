@@ -37,7 +37,8 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService, LocationService, $cordovaFile, $cordovaMedia) {
+.controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
+                                     LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate) {
   function updateConversationList() {
     MessageService.allConversations().then(function(data) {
       data.sort(function(a, b) {
@@ -58,6 +59,7 @@ angular.module('starter.controllers', [])
   function updateDestinationList() {
     MessageService.getReceivers().then(function(receivers) {
       $scope.destinations = receivers;
+      $ionicSlideBoxDelegate.update();
       $scope.$apply();
     })
   }
@@ -123,7 +125,11 @@ angular.module('starter.controllers', [])
 
   function startConversationWithMessage(msg) {
     $scope.newCoversationInProgress = true;
-    $scope.newConvoParams = {}
+    $scope.newConvoParams = {
+      destinationId: 0
+    }
+
+    $ionicSlideBoxDelegate.slide(0);
 
     window.localStorage['newMessage'] = msg;
     updateLocationList();
@@ -166,6 +172,7 @@ angular.module('starter.controllers', [])
 
   $scope.startConversation = function() {
     console.log('start recording for a new conversation');
+    $scope.destinationId = 0;
 
     if (window.plugins === undefined) {
       console.log("Send test message from web");
@@ -186,13 +193,20 @@ angular.module('starter.controllers', [])
     //media.release();
   }
 
+  $scope.destinationChanged = function(i) {
+    $scope.newConvoParams.destinationId = i;
+  }
+
   $scope.sendConversation = function() {
     // update location
     $scope.updateLocation($scope.newConvoParams.newLocation);
 
     // create new conversation
     var msg = window.localStorage["newMessage"];
+
+    $scope.newConvoParams.convoDestination = $scope.destinations[$scope.newConvoParams.destinationId];
     console.log($scope.newConvoParams.convoDestination);
+
     if ($scope.newConvoParams.convoDestination.entity == null)
       MessageService.startConversationWithAll().then(
         function(convo) {
