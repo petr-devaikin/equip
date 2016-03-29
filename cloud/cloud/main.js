@@ -5,36 +5,104 @@ Parse.Cloud.define("hello", function(request, response) {
     response.success("Hello world!");
 });
 
-function saveConvo(author, response, group, locationId) {
+function saveConvo(author, response, group, location) {
     var userObj = Parse.Object.extend("User");
     var userConvoObj = Parse.Object.extend("UserConversation");
     var convoObj = Parse.Object.extend("Conversation");
+    var userGroupObj = Parse.Object.extend("UserGroup");
 
     var newConvo = new convoObj();
     newConvo.set("startedBy", author);
     newConvo.set("fromLocation", author.attributes.lastLocation);
 
+    if (group !== undefined)
+        newConvo.set("toGroup", group);
+
+    if (location !== undefined)
+        newConvo.set("toLocation", location);
+
     newConvo.save().then(
         function (convo) {
-            // ADD GROUP PARTICIPANT
-            // ADD PEOPLE IN LOCATION
+            if (group !== undefined) {
+                var query = new Parse.Query(userGroupObj);
+                query.equalTo("group", group);
+                query.include("user");
 
-            var query = new Parse.Query(userObj);
-            query.find().then(
-                function (users) {
-                    for (var i = 0; i < users.length; i++) {
-                        var newUserConvo = new userConvoObj();
-                        newUserConvo.set("user", users[i]);
-                        newUserConvo.set("conversation", convo);
-                        newUserConvo.save();
+                var authorFound = false;
+
+                query.find().then(
+                    function (userGroups) {
+                        for (var i = 0; i < userGroups.length; i++) {
+                            if (userGroups[i].attributes.user.id == author.id)
+                                authorFound = true;
+
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", userGroups[i].attributes.user);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        // add author if he is not in the group
+                        if (!authorFound) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", author);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
                     }
-
-                    response.success(newConvo);
-                },
-                function (error) {
-                    response.error("cannot get user list");
+                );
+            }
+            else if (location !== undefined) {
+                // add author if he is not at the location
+                if (location.id != author.attributes.lastLocation.id) {
+                    var newUserConvo = new userConvoObj();
+                    newUserConvo.set("user", author);
+                    newUserConvo.set("conversation", convo);
+                    newUserConvo.save();
                 }
-            );
+
+                // add others at location
+                var query = new Parse.Query(userObj);
+                query.equalTo("lastLocation", location);
+                query.find().then(
+                    function (users) {
+                        for (var i = 0; i < users.length; i++) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", users[i]);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
+                    }
+                );
+            }
+            else {
+                var query = new Parse.Query(userObj);
+                query.find().then(
+                    function (users) {
+                        for (var i = 0; i < users.length; i++) {
+                            var newUserConvo = new userConvoObj();
+                            newUserConvo.set("user", users[i]);
+                            newUserConvo.set("conversation", convo);
+                            newUserConvo.save();
+                        }
+
+                        response.success(newConvo);
+                    },
+                    function (error) {
+                        response.error("cannot get user list");
+                    }
+                );
+            }
         },
         function (error) {
             console.log(error);
@@ -46,16 +114,18 @@ function saveConvo(author, response, group, locationId) {
 Parse.Cloud.define("startConversation", function(request, response) {
     var userObj = Parse.Object.extend("User");
     var groupObj = Parse.Object.extend("Group");
+    var locationObj = Parse.Object.extend("Location");
 
     var author = new userObj();
     author.id = request.params.startedBy;
     author.fetch().then(
         function (author) {
-            if (request.group !== undefined) {
+            if (request.params.group !== undefined) {
                 var group = new groupObj();
-                group.id = request.group;
+                group.id = request.params.group;
                 group.fetch().then(
                     function(group) {
+                        console.log("start convo to group");
                         saveConvo(author, response, group);
                     },
                     function(error) {
@@ -63,8 +133,18 @@ Parse.Cloud.define("startConversation", function(request, response) {
                     }
                 );
             }
-            else if (request.location !== undefined) {
-                saveConvo(author, response, undefined, request.location);
+            else if (request.params.location !== undefined) {
+                var location = new locationObj();
+                location.id = request.params.location;
+                location.fetch().then(
+                    function(location) {
+                        console.log("start convo to location");
+                        saveConvo(author, response, undefined, location);
+                    },
+                    function(error) {
+                        response.error("cannot get location info");
+                    }
+                );
             }
             else
                 saveConvo(author, response);
@@ -98,7 +178,6 @@ Parse.Cloud.define("getConversations", function(request, response) {
                     convo.include("startedBy");
                     convo.include("toGroup");
                     convo.include("toLocation");
-                    console.log("get info for convo: " + convo.id);
                     return convo.get(userConvo.attributes.conversation.id)
                         .then(function(c) {
                             var msgQuery = new Parse.Query(messageObj);
