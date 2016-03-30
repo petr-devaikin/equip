@@ -10,9 +10,28 @@
     background-size: 80px;
 }
 
+.button-left {
+    text-align: left;
+    padding-left: 40px;
+}
+
+.button-left i {
+    position: absolute;
+    left: 12px;
+}
+
 .button.button-positive {
     background-color: #33BDC1;
     text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.button.button-positive.button-outline {
+    border: 1px solid #33BDC1;
+    color: #33BDC1;
+    font-size: 16px;
+    font-weight: normal;
 }
 
 .tabs-striped.tabs-color-light .tab-item {
@@ -50,6 +69,20 @@
     margin-left: 15px;
 }
 
-h4 {
+h1, h2, h3, h4 {
     text-transform: uppercase;
+}
+
+.slider {
+    border: 1px solid gray;
+    height: 70px;
+}
+
+.bar-footer {
+    padding: 0;
+}
+
+.bar-footer button.button-full {
+    margin: 0;
+    font-size: 16px;
 }

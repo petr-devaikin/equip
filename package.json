@@ -26,6 +26,10 @@
     {
       "locator": "https://github.com/hazemhagrass/phonegap-base64.git",
       "id": "com-badrit-base64"
+    },
+    {
+      "locator": "https://github.com/phonegap-build/PushPlugin.git",
+      "id": "com.phonegap.plugins.PushPlugin"
     }
   ],
   "cordovaPlatforms": [
