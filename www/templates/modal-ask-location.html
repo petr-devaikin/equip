@@ -1,0 +1,28 @@
+<ion-modal-view>
+  <ion-content class="padding">
+    <div ng-show="lastLocation !== undefined">
+      <h1>Are you still at {{lastLocation.attributes.name}}?</h1>
+
+      <br/>
+      <button class="button button-full button-positive" ng-click="confirmLocation()">Yes</button>
+
+      <br/>
+      <h4>No, I'm currently at</h4>
+    </div>
+
+    <div ng-show="lastLocation === undefined">
+      <h1 style="padding-top: 15px; margin-bottom: 20px;">
+        Choose your location
+      </h1>
+      <br/>
+    </div>
+
+    <ion-list>
+      <ion-radio ng-model="newLocation" ng-value="loc" ng-repeat="loc in locations" ng-change="updateLocation(newLocation)">
+        {{loc.attributes.name}}
+      </ion-radio>
+    </ion-list>
+
+    <br/>
+  </ion-content>
+</ion-modal-view>

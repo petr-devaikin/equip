@@ -38,7 +38,8 @@ angular.module('starter.controllers', [])
 })
 
 .controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
-                                     LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate) {
+                                     LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
+                                     $ionicModal) {
   function updateConversationList() {
     MessageService.allConversations().then(function(data) {
       data.sort(function(a, b) {
@@ -68,11 +69,11 @@ angular.module('starter.controllers', [])
     PeopleService.currentUser().then(function(user) {
       $scope.lastLocation = user.attributes.lastLocation;
 
-      $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
+      var ask = user.attributes.lastLocationDate === undefined ||
         (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 30;
 
-      if ($scope.askForLocation) {
-        updateLocationList();
+      if (ask) {
+        $scope.askForLocationModal.show();
       }
       else
         $scope.$apply();
@@ -81,9 +82,15 @@ angular.module('starter.controllers', [])
 
   var updateTimer = undefined;
 
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateConversationList();
-    updateLocationList();
+  // init modals
+
+  $ionicModal.fromTemplateUrl('templates/modal-ask-location.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.askForLocationModal = modal;
+
+    // check location and start timer
     checkLocation();
 
     updateTimer = setInterval(function() {
@@ -92,16 +99,37 @@ angular.module('starter.controllers', [])
     }, 10000);
   });
 
+  $scope.askForLocation = function() {
+    $scope.askForLocationModal.show();
+  };
+
+  $ionicModal.fromTemplateUrl('templates/modal-new-conversation.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.newConversationModal = modal;
+  });
+
+  $scope.showDestinationModal = function() {
+    $scope.newConversationModal.show();
+  };
+
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.askForLocationModal.remove();
+  });
+
+
+  // Init tab
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateConversationList();
+    updateLocationList();
+  });
+
   $scope.$on('$ionicView.leave', function (viewInfo, state) {
     clearInterval(updateTimer);
   });
-
-  $scope.sendToConversation = function(convo) {
-    /*MessageService.sendToLocation(location, "")
-      .then(function() {
-        updateMessageList();
-      });*/
-  }
 
   function sendMessageToConversation(convo, msg) {
     if (msg === undefined || msg == 'undefined')
@@ -125,26 +153,23 @@ angular.module('starter.controllers', [])
   }
 
   function startConversationWithMessage(msg) {
-    $scope.newCoversationInProgress = true;
-
     $scope.newConvoParams = {
       destinationId: 0
     }
 
-    for (var i = 0; i < $scope.locations.length; i++) {
-      console.log($scope.locations[i].id);
-      console.log($scope.lastLocation);
+    for (var i = 0; i < $scope.locations.length; i++)
       if ($scope.locations[i].id == $scope.lastLocation.id) {
         $scope.newConvoParams.newLocation = $scope.locations[i];
         break;
       }
-    }
 
     $ionicSlideBoxDelegate.slide(0);
 
     window.localStorage['newMessage'] = msg;
     updateDestinationList();
     //$scope.$apply();
+
+    $scope.showDestinationModal();
   }
 
   function recordMessage(callback) {
@@ -207,15 +232,14 @@ angular.module('starter.controllers', [])
     $scope.newConvoParams.destinationId = i;
   }
 
-  $scope.sendConversation = function() {
+  $scope.sendConversation = function(destination) {
     // update location
     $scope.updateLocation($scope.newConvoParams.newLocation);
 
     // create new conversation
     var msg = window.localStorage["newMessage"];
 
-    $scope.newConvoParams.convoDestination = $scope.destinations[$scope.newConvoParams.destinationId];
-    console.log($scope.newConvoParams.convoDestination);
+    $scope.newConvoParams.convoDestination = destination;
 
     if ($scope.newConvoParams.convoDestination.entity == null)
       MessageService.startConversationWithAll().then(
@@ -239,7 +263,7 @@ angular.module('starter.controllers', [])
         }
       );
 
-    $scope.newCoversationInProgress = false;
+    $scope.newConversationModal.hide();
   }
 
   $scope.startReply = function(convo) {
@@ -280,12 +304,16 @@ angular.module('starter.controllers', [])
       LocationService.updateLocation(newLocation).then(function() {
         checkLocation();
       });
+
+    $scope.askForLocationModal.hide();
   }
 
   $scope.confirmLocation = function() {
     LocationService.confirmLocation().then(function() {
       checkLocation();
     });
+
+    $scope.askForLocationModal.hide();
   }
 })
 
