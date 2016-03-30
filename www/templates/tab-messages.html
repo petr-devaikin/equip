@@ -1,41 +1,9 @@
 <ion-view view-title="">
   <ion-content>
-    <div ng-show="askForLocation" class="padding" style="background: #fff; border-bottom: 1px solid #ccc; padding-bottom: 20px; padding-top: 0;">
-      <div ng-show="lastLocation !== undefined">
-        <button class="button button-positive" ng-click="confirmLocation()" style="border: 1px solid rgb(211, 211, 211); text-align: left; border-radius: 0; float: right; position: relative; height: 30px; width: 80px; text-align: center;">Yes</button>
-        <h4 style="padding-top: 15px; margin-bottom: 20px;">
-          Are you still at {{lastLocation.attributes.name}}?
-        </h4>
-
-        <label class="item item-input item-select">
-          <div class="input-label">
-            NO, I'm currently at
-          </div>
-          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation" ng-change="updateLocation(newLocation)"></select>
-        </label>
-      </div>
-
-      <div ng-show="lastLocation === undefined">
-        <h4 style="padding-top: 15px; margin-bottom: 20px;">
-          Choose your location
-        </h4>
-        <label class="item item-input item-select">
-          <div class="input-label">
-            I'm currently at
-          </div>
-          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newLocation" ng-change="updateLocation(newLocation)"></select>
-        </label>
-      </div>
-    </div>
-
-    <div ng-show="!askForLocation" class="padding your-location">
+    <div class="padding your-location">
       Your location: <strong>{{lastLocation.attributes.name}}</strong>
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
-
-    <button class="button" ng-show="!newCoversationInProgress" style="border-radius: 52px; height: 52px; position: relative; left: 50%; margin-left: -107px; z-index: 100; background: #3b3b3b; color: #fff;"  ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
-      START CONVERSATION
-    </button>
 
     <div ng-show="newCoversationInProgress" class="card">
       <div class="item item-divider">
@@ -109,4 +77,9 @@
       </a>
     </div>
   </ion-content>
+  <ion-footer-bar ng-show="!newCoversationInProgress">
+    <button class="button button-full button-positive" ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
+      <i class="icon ion-mic-a"></i> Start new conversation
+    </button>
+  </ion-footer-bar>
 </ion-view>

@@ -38,7 +38,8 @@ angular.module('starter.controllers', [])
 })
 
 .controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
-                                     LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate) {
+                                     LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
+                                     $ionicModal) {
   function updateConversationList() {
     MessageService.allConversations().then(function(data) {
       data.sort(function(a, b) {
@@ -68,11 +69,11 @@ angular.module('starter.controllers', [])
     PeopleService.currentUser().then(function(user) {
       $scope.lastLocation = user.attributes.lastLocation;
 
-      $scope.askForLocation = user.attributes.lastLocationDate === undefined ||
+      var ask = user.attributes.lastLocationDate === undefined ||
         (new Date()).getTime() - user.attributes.lastLocationDate.getTime() > 1000 * 60 * 30;
 
-      if ($scope.askForLocation) {
-        updateLocationList();
+      if (ask) {
+        $scope.askForLocationModal.show();
       }
       else
         $scope.$apply();
@@ -81,15 +82,46 @@ angular.module('starter.controllers', [])
 
   var updateTimer = undefined;
 
-  $scope.$on('$ionicView.enter', function (viewInfo, state) {
-    updateConversationList();
-    updateLocationList();
+  $ionicModal.fromTemplateUrl('templates/modal-ask-location.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.askForLocationModal = modal;
+
+    // check location and start timer
+
     checkLocation();
 
     updateTimer = setInterval(function() {
       updateConversationList();
       checkLocation();
     }, 10000);
+  });
+
+  $scope.askForLocation = function() {
+    $scope.askForLocationModal.show();
+  };
+  /*$scope.closeModal = function() {
+    $scope.askForLocationModal.hide();
+  };*/
+
+  // Execute action on hide modal
+  $scope.$on('modal.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove modal
+  $scope.$on('modal.removed', function() {
+    // Execute action
+  });
+
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+  $scope.$on('$ionicView.enter', function (viewInfo, state) {
+    updateConversationList();
+    updateLocationList();
   });
 
   $scope.$on('$ionicView.leave', function (viewInfo, state) {
@@ -280,12 +312,16 @@ angular.module('starter.controllers', [])
       LocationService.updateLocation(newLocation).then(function() {
         checkLocation();
       });
+
+    $scope.askForLocationModal.hide();
   }
 
   $scope.confirmLocation = function() {
     LocationService.confirmLocation().then(function() {
       checkLocation();
     });
+
+    $scope.askForLocationModal.hide();
   }
 })
 
