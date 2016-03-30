@@ -10,11 +10,28 @@
     background-size: 80px;
 }
 
+.button-left {
+    text-align: left;
+    padding-left: 40px;
+}
+
+.button-left i {
+    position: absolute;
+    left: 12px;
+}
+
 .button.button-positive {
     background-color: #33BDC1;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 16px;
+}
+
+.button.button-positive.button-outline {
+    border: 1px solid #33BDC1;
+    color: #33BDC1;
+    font-size: 16px;
+    font-weight: normal;
 }
 
 .tabs-striped.tabs-color-light .tab-item {

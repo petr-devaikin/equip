@@ -82,6 +82,8 @@ angular.module('starter.controllers', [])
 
   var updateTimer = undefined;
 
+  // init modals
+
   $ionicModal.fromTemplateUrl('templates/modal-ask-location.html', {
     scope: $scope,
     animation: 'slide-in-up'
@@ -89,7 +91,6 @@ angular.module('starter.controllers', [])
     $scope.askForLocationModal = modal;
 
     // check location and start timer
-
     checkLocation();
 
     updateTimer = setInterval(function() {
@@ -101,23 +102,25 @@ angular.module('starter.controllers', [])
   $scope.askForLocation = function() {
     $scope.askForLocationModal.show();
   };
-  /*$scope.closeModal = function() {
-    $scope.askForLocationModal.hide();
-  };*/
 
-  // Execute action on hide modal
-  $scope.$on('modal.hidden', function() {
-    // Execute action
+  $ionicModal.fromTemplateUrl('templates/modal-new-conversation.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.newConversationModal = modal;
   });
-  // Execute action on remove modal
-  $scope.$on('modal.removed', function() {
-    // Execute action
-  });
+
+  $scope.showDestinationModal = function() {
+    $scope.newConversationModal.show();
+  };
 
   //Cleanup the modal when we're done with it!
   $scope.$on('$destroy', function() {
-    $scope.modal.remove();
+    $scope.askForLocationModal.remove();
   });
+
+
+  // Init tab
 
   $scope.$on('$ionicView.enter', function (viewInfo, state) {
     updateConversationList();
@@ -127,13 +130,6 @@ angular.module('starter.controllers', [])
   $scope.$on('$ionicView.leave', function (viewInfo, state) {
     clearInterval(updateTimer);
   });
-
-  $scope.sendToConversation = function(convo) {
-    /*MessageService.sendToLocation(location, "")
-      .then(function() {
-        updateMessageList();
-      });*/
-  }
 
   function sendMessageToConversation(convo, msg) {
     if (msg === undefined || msg == 'undefined')
@@ -157,26 +153,23 @@ angular.module('starter.controllers', [])
   }
 
   function startConversationWithMessage(msg) {
-    $scope.newCoversationInProgress = true;
-
     $scope.newConvoParams = {
       destinationId: 0
     }
 
-    for (var i = 0; i < $scope.locations.length; i++) {
-      console.log($scope.locations[i].id);
-      console.log($scope.lastLocation);
+    for (var i = 0; i < $scope.locations.length; i++)
       if ($scope.locations[i].id == $scope.lastLocation.id) {
         $scope.newConvoParams.newLocation = $scope.locations[i];
         break;
       }
-    }
 
     $ionicSlideBoxDelegate.slide(0);
 
     window.localStorage['newMessage'] = msg;
     updateDestinationList();
     //$scope.$apply();
+
+    $scope.showDestinationModal();
   }
 
   function recordMessage(callback) {
@@ -239,15 +232,14 @@ angular.module('starter.controllers', [])
     $scope.newConvoParams.destinationId = i;
   }
 
-  $scope.sendConversation = function() {
+  $scope.sendConversation = function(destination) {
     // update location
     $scope.updateLocation($scope.newConvoParams.newLocation);
 
     // create new conversation
     var msg = window.localStorage["newMessage"];
 
-    $scope.newConvoParams.convoDestination = $scope.destinations[$scope.newConvoParams.destinationId];
-    console.log($scope.newConvoParams.convoDestination);
+    $scope.newConvoParams.convoDestination = destination;
 
     if ($scope.newConvoParams.convoDestination.entity == null)
       MessageService.startConversationWithAll().then(
@@ -271,7 +263,7 @@ angular.module('starter.controllers', [])
         }
       );
 
-    $scope.newCoversationInProgress = false;
+    $scope.newConversationModal.hide();
   }
 
   $scope.startReply = function(convo) {

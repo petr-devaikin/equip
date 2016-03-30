@@ -5,37 +5,6 @@
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <div ng-show="newCoversationInProgress" class="card">
-      <div class="item item-divider">
-        Creating New Conversation
-      </div>
-      <div class="item">
-        Message info here
-      </div>
-      <div class="item">
-        <label class="item item-input item-select">
-          <div class="input-label">
-            I'm currently at
-          </div>
-          <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation" ng-selected="selected">
-          </select>
-        </label>
-        Send a message to
-        <ion-slide-box on-slide-changed="destinationChanged($index)" class="padding">
-          <ion-slide ng-repeat="dest in destinations" ng-style="dest.featured ? { 'font-weight': 'bold' } : { 'font-weight': 'normal' }">
-            <span ng-show="dest.entity.className == 'Group'">GROUP:</span>
-            <span ng-show="dest.entity.className == 'Location'">LOCATION:</span>
-              {{ dest.name }}
-          </ion-slide>
-        </ion-slide-box>
-      </div>
-      <div class="item item-divider">
-        <button class="button button-balanced" ng-click="sendConversation();">
-          Send!
-        </button>
-      </div>
-    </div>
-
     <div class="card" ng-repeat="convo in conversations">
       <div ng-show="convo.conversation.attributes.toGroup" class="item item-divider">
         <i class="icon ion-ios-people"></i> {{ convo.conversation.attributes.toGroup.attributes.name }}
@@ -77,6 +46,7 @@
       </a>
     </div>
   </ion-content>
+
   <ion-footer-bar ng-show="!newCoversationInProgress">
     <button class="button button-full button-positive" ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
       <i class="icon ion-mic-a"></i> Start new conversation
