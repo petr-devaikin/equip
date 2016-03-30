@@ -82,7 +82,23 @@ h1, h2, h3, h4 {
     padding: 0;
 }
 
+.card button.button-full {
+    margin: 0;
+}
+
 .bar-footer button.button-full {
     margin: 0;
     font-size: 16px;
+}
+
+.convo-header {
+}
+
+.convo-header .ion-play {
+    float: right;
+}
+
+.convo-meta {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
