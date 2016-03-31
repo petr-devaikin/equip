@@ -26,6 +26,10 @@
     {
       "locator": "https://github.com/hazemhagrass/phonegap-base64.git",
       "id": "com-badrit-base64"
+    },
+    {
+      "locator": "https://github.com/benjie/phonegap-parse-plugin",
+      "id": "org.apache.cordova.core.parseplugin"
     }
   ],
   "cordovaPlatforms": [

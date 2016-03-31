@@ -45,7 +45,7 @@ angular.module('starter.controllers', [])
 
       var user = new Parse.User();
       user.set("name", $scope.user.name);
-      user.set("username", $scope.user.email);
+      user.set("username", $scope.user.username);
       user.set("password", $scope.user.password);
       user.set("email", $scope.user.email);
       user.set("dob", $scope.user.dob);
