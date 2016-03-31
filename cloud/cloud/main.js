@@ -36,7 +36,7 @@ function saveConvo(author, response, group, location) {
                     Parse.Push.send({
                         where: pushQuery,
                         data: {
-                            alert: "Parse query prova"
+                            alert: "New message on group"
                         }
                     }, {
                         success: function() {
@@ -84,6 +84,8 @@ function saveConvo(author, response, group, location) {
                     newUserConvo.set("conversation", convo);
                     newUserConvo.save();
                 }
+
+                
 
                 // add others at location
                 var query = new Parse.Query(userObj);
