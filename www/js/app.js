@@ -27,6 +27,9 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
     );
 
 
+
+
+
     //console.log(Media);
     if (navigator.device)
       console.log(navigator.device.capture);
@@ -48,6 +51,12 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
     url: '/login',
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
+  })
+
+  .state('register', {
+    url: '/register',
+    templateUrl: 'templates/register.html',
+    controller: 'RegisterCtrl'
   })
 
   .state('eventDetails', {

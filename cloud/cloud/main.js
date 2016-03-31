@@ -30,6 +30,25 @@ function saveConvo(author, response, group, location) {
 
                 var authorFound = false;
 
+                // Find devices associated with these users
+                var pushQuery = new Parse.Query(Parse.Installation);
+                pushQuery.matchesQuery('user', query);
+
+                // Send push notification to query
+                Parse.Push.send({
+                  where: pushQuery,
+                  data: {
+                    alert: "Prova push"
+                  }
+                }, {
+                  success: function() {
+                    console.log("Push send OK");
+                  },
+                  error: function(error) {
+                    console.log("Push FAIL: "+ error);
+                  }
+                });
+
                 query.find().then(
                     function (userGroups) {
                         for (var i = 0; i < userGroups.length; i++) {

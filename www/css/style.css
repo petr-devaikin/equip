@@ -69,6 +69,12 @@
     margin-left: 15px;
 }
 
+.sign-up{
+    text-align: center;
+    font-size: 12px;
+    color: #27bfc4;
+}
+
 h1, h2, h3, h4 {
     text-transform: uppercase;
 }

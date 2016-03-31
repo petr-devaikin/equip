@@ -4,6 +4,17 @@ angular.module('starter.services', [])
   var msgObj = Parse.Object.extend("Message");
   var user = Parse.User.current().fetch();
 
+  var sendTestToConversation = function(convo, file) {
+    var newMsg = new msgObj();
+    var user = Parse.User.current();
+    newMsg.set('fromUser', user);
+    newMsg.set('conversation', convo);
+    if (file !== undefined)
+      newMsg.set('audioContent', file);
+    newMsg.set('fromLocation', user.attributes.lastLocation);
+    return newMsg.save();
+  }
+
   return {
     allConversations: function() {
       return Parse.Cloud.run('getConversations', {
@@ -43,16 +54,7 @@ angular.module('starter.services', [])
         location: location.id
       });
     },
-    sendTestToConversation: function(convo, file) {
-      var newMsg = new msgObj();
-      var user = Parse.User.current();
-      newMsg.set('fromUser', user);
-      newMsg.set('conversation', convo);
-      if (file !== undefined)
-        newMsg.set('audioContent', file);
-      newMsg.set('fromLocation', user.attributes.lastLocation);
-      return newMsg.save();
-    },
+    sendTestToConversation: sendTestToConversation,
     sendToConversation: function(convo, msgBs64) {
       console.log('send messagge to a conversation');
 
@@ -89,6 +91,10 @@ angular.module('starter.services', [])
     }
   };
 })
+
+// .factory('RegistrationService', function(){
+//
+// })
 
 .factory('PeopleService', function() {
   var userObj = Parse.Object.extend("User");
