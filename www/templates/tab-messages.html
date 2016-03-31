@@ -14,10 +14,16 @@
           <i class="icon ion-location"></i> {{ convo.conversation.attributes.toLocation.attributes.name }}
         </span>
         <span ng-show="convo.conversation.attributes.toLocation === undefined && convo.conversation.attributes.toGroup === undefined">
-          ALL (BROADCAST)
+          ALL
         </span>
 
-        <i class="icon ion-play" ng-click="playMessage(message)" ></i>
+        <button class="button button-small button-positive" ng-mouseup="stopReply(convo.conversation)" ng-mousedown="startReply(convo.conversation)">
+          <i class="icon ion-mic-a"></i> Reply
+        </button>
+
+        <button class="button button-small button-positive">
+          Accept
+        </button>
       </div>
 
       <div class="item item-text-wrap convo-meta">
@@ -32,22 +38,21 @@
 
       </div>
 
-      <a href="#" class="item item-icon-left" ng-repeat="message in convo.messages">
-        <i class="icon ion-play" ng-click="playMessage(message)" ></i>
-
-        @<span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
-        /
-        <i class="icon icon-location"></i>
-        <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromLocation.attributes.name }}</span>
-        /
-        <span style="font-weight: bold; text-transform: uppercase;">
-          {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
-        </span>
-      </a>
-
-      <button class="button button-full button-positive" ng-mouseup="stopReply(convo.conversation)" ng-mousedown="startReply(convo.conversation)">
-        <i class="icon ion-mic-a"></i> Reply
-      </button>
+      <div class="item item-text-wrap convo-messages">
+        <div class="equip-message" ng-repeat="message in convo.messages">
+          <i class="icon ion-play" ng-click="playMessage(message)"></i>
+          <div class="equip-message__info">
+            @<span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
+            /
+            <i class="icon icon-location"></i>
+            <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromLocation.attributes.name }}</span>
+            /
+            <span style="font-weight: bold; text-transform: uppercase;">
+              {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </ion-content>
 
