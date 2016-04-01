@@ -102,6 +102,14 @@ angular.module('starter.controllers', [])
 .controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
                                      $ionicModal) {
+  var readMessages = [];
+
+  $scope.readMessage = function(msg) {
+    readMessages.push(msg.id);
+    msg.read = true;
+  }
+
+
   function updateConversationList() {
     MessageService.allConversations().then(function(data) {
       data.sort(function(a, b) {
@@ -115,6 +123,8 @@ angular.module('starter.controllers', [])
         for (var j = 0; j < data[i].messages.length; j++) {
           if (data[i].messages[j].attributes.pinned)
             counter++;
+          if (readMessages.indexOf(data[i].messages[j].id) != -1)
+            data[i].messages[j].read = true;
         }
 
         data[i].pinned = counter;
@@ -372,6 +382,7 @@ angular.module('starter.controllers', [])
 
   $scope.playMessage = function(message){
     console.log('play message');
+    $scope.readMessage(message);
 
     var audioContentMsg = message.get('audioContent');
     if (audioContentMsg === undefined)
