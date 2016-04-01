@@ -107,6 +107,20 @@ angular.module('starter.controllers', [])
       data.sort(function(a, b) {
         return new Date(b.conversation.attributes.createdAt) - new Date(a.conversation.attributes.createdAt);
       });
+
+      for (var i = 0; i < data.length; i++) {
+        data[i].pinned = 0;
+        var counter = 0;
+
+        for (var j = 0; j < data[i].messages.length; j++) {
+          if (data[i].messages[j].attributes.pinned)
+            counter++;
+        }
+
+        data[i].pinned = counter;
+        data[i].messages.reverse();
+      }
+
       $scope.conversations = data;
       $scope.$apply();
     });
@@ -158,7 +172,7 @@ angular.module('starter.controllers', [])
     updateTimer = setInterval(function() {
       updateConversationList();
       checkLocation();
-    }, 10000);
+    }, 5000);
   });
 
   $scope.askForLocation = function() {
@@ -193,6 +207,15 @@ angular.module('starter.controllers', [])
     clearInterval(updateTimer);
   });
 
+  $scope.pinToConversation = function(convo) {
+    console.log('pin called');
+    MessageService.pinToConvo(convo)
+      .done(function() {
+          updateConversationList();
+          console.log('DONE pinned');
+      });
+  }
+
   function sendMessageToConversation(convo, msg) {
     if (msg === undefined || msg == 'undefined')
       MessageService.sendTestToConversation(convo)
@@ -216,7 +239,8 @@ angular.module('starter.controllers', [])
 
   function startConversationWithMessage(msg) {
     $scope.newConvoParams = {
-      destinationId: 0
+      destinationId: 0,
+      peopleNeeded: 0
     }
 
     for (var i = 0; i < $scope.locations.length; i++)
@@ -304,21 +328,21 @@ angular.module('starter.controllers', [])
     $scope.newConvoParams.convoDestination = destination;
 
     if ($scope.newConvoParams.convoDestination.entity == null)
-      MessageService.startConversationWithAll().then(
+      MessageService.startConversationWithAll($scope.newConvoParams.peopleNeeded).then(
         function(convo) {
           console.log("New conversation with all created");
           sendMessageToConversation(convo, msg);
         }
       );
     else if ($scope.newConvoParams.convoDestination.entity.className == 'Group')
-      MessageService.startConversationWithGroup($scope.newConvoParams.convoDestination.entity).then(
+      MessageService.startConversationWithGroup($scope.newConvoParams.convoDestination.entity, $scope.newConvoParams.peopleNeeded).then(
         function(convo) {
           console.log("New conversation with group created");
           sendMessageToConversation(convo, msg);
         }
       );
     else
-      MessageService.startConversationWithLocation($scope.newConvoParams.convoDestination.entity).then(
+      MessageService.startConversationWithLocation($scope.newConvoParams.convoDestination.entity, $scope.newConvoParams.peopleNeeded).then(
         function(convo) {
           console.log("New conversation with location created");
           sendMessageToConversation(convo, msg);

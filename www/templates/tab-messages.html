@@ -5,7 +5,7 @@
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <div class="card" ng-repeat="convo in conversations">
+    <div class="card" ng-repeat="convo in conversations" ng-style="{ 'opacity': convo.conversation.attributes.peopleNeeded && convo.pinned == convo.conversation.attributes.peopleNeeded ? '.3' : '1' }">
       <div class="item item-divider convo-header">
         <span ng-show="convo.conversation.attributes.toGroup">
           <i class="icon ion-ios-people"></i> {{ convo.conversation.attributes.toGroup.attributes.name }}
@@ -21,7 +21,7 @@
           <i class="icon ion-mic-a"></i> Reply
         </button>
 
-        <button class="button button-small button-positive">
+        <button class="button button-small button-positive" ng-show="convo.conversation.attributes.peopleNeeded && !convo.pinned" ng-click="pinToConversation(convo.conversation)">
           Accept
         </button>
       </div>
@@ -36,12 +36,16 @@
           {{ convo.conversation.attributes.createdAt.getUTCHours() + ":" + convo.conversation.attributes.createdAt.getUTCMinutes(); }}
         </span>
 
+        <span style="position: relative; float: right; font-weight: bold;" ng-show="convo.conversation.attributes.peopleNeeded">
+          {{ convo.pinned }}/{{ convo.conversation.attributes.peopleNeeded }} <i class="icon ion-pin"></i>
+        </span>
       </div>
 
       <div class="item item-text-wrap convo-messages">
         <div class="equip-message" ng-repeat="message in convo.messages">
-          <i class="icon ion-play" ng-click="playMessage(message)"></i>
-          <div class="equip-message__info">
+          <i class="icon ion-play" ng-click="playMessage(message)" ng-show="!message.attributes.pinned"></i>
+          <i class="icon ion-pin" style="color: #007700;" ng-click="playMessage(message)" ng-show="message.attributes.pinned"></i>
+          <!--div class="equip-message__info">
             @<span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
             /
             <i class="icon icon-location"></i>
@@ -50,7 +54,7 @@
             <span style="font-weight: bold; text-transform: uppercase;">
               {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
             </span>
-          </div>
+          </div-->
         </div>
       </div>
     </div>

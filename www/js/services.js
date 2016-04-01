@@ -27,31 +27,27 @@ angular.module('starter.services', [])
     getReceivers: function() {
       return Parse.Cloud.run('getReceiverList', { user: Parse.User.current().id });
     },
-    startConversationWithAll: function() {
-      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id });
+    startConversationWithAll: function(pins) {
+      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id, pins: pins });
     },
-    startConversationWithGroup: function(group) {
+    startConversationWithGroup: function(group, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
         group: group.id
       });
     },
-    startConversationWithLocation: function(location) {
+    startConversationWithLocation: function(location, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
-        location: location.id
+        location: location.id,
+        pins: pins
       });
     },
-    startConversationWithGroup: function(group) {
+    startConversationWithGroup: function(group, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
-        group: group.id
-      });
-    },
-    startConversationWithLocation: function(location) {
-      return Parse.Cloud.run('startConversation', {
-        startedBy: Parse.User.current().id,
-        location: location.id
+        group: group.id,
+        pins: pins
       });
     },
     sendTestToConversation: sendTestToConversation,
@@ -75,6 +71,15 @@ angular.module('starter.services', [])
       return url;
       // query.exists('audioContent');
       // return query.get('audioContent');
+    },
+    pinToConvo: function(convo) {
+      var newMsg = new msgObj();
+      var user = Parse.User.current();
+      newMsg.set('fromUser', user);
+      newMsg.set('conversation', convo);
+      newMsg.set('pinned', true);
+      newMsg.set('fromLocation', user.attributes.lastLocation);
+      return newMsg.save();
     }
 
   };

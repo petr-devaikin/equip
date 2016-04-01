@@ -137,3 +137,31 @@ h1, h2, h3, h4 {
 .equip-message__info {
     display: none;
 }
+
+.peopleneeded {
+    overflow: hidden;
+}
+
+.peopleneeded label {
+    position: relative;
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.peopleneeded .radio-content {
+    height: 40px;
+}
+
+.peopleneeded .radio-icon {
+    background: #33BDC1;
+    opacity: .5;
+    color: rgba(0, 0, 0, 0);
+}
+
+.peopleneeded .item-content {
+    padding: 6px 0 0;
+    text-align: center;
+}
