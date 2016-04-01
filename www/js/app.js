@@ -9,6 +9,15 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
+
+
+    var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
+    var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
+    //var clientKeyRest = "VHBsd7pKdcN62xRaCitEDGK45hP65bQlOqfHmnBA";
+
+    console.log("initialize");
+    Parse.initialize(appId,clientKey);
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -21,38 +30,34 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
       StatusBar.styleDefault();
     }
 
-    var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
-    var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
-    var clientKeyRest = "VHBsd7pKdcN62xRaCitEDGK45hP65bQlOqfHmnBA"
-
-    Parse.initialize(appId,clientKey);
-
-    parsePlugin.initialize(appId, clientKey, function() {
-      console.log('inside parse');
-      parsePlugin.subscribe('SampleChannel', function() {
-        console.log('inside subscrive');
-        parsePlugin.getInstallationId(function(id) {
-
-          console.log("installation object id: " + id)
 
 
-             //Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
-
-             var install_data = {
-                installation_id: id,
-                channels: ['SampleChannel']
-             }
-
-        }, function(e) {
-            console.log('error');
-        });
-
-    }, function(e) {
-        console.log('error');
-    });
-    }, function(e) {
-      console.log('error');
-    });
+    // parsePlugin.initialize(appId, clientKey, function() {
+    //   console.log('inside parse');
+    //   parsePlugin.subscribe('SampleChannel', function() {
+    //     console.log('inside subscrive');
+    //     parsePlugin.getInstallationId(function(id) {
+    //
+    //       console.log("installation object id: " + id)
+    //
+    //
+    //          //Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
+    //
+    //          var install_data = {
+    //             installation_id: id,
+    //             channels: ['SampleChannel']
+    //          }
+    //
+    //     }, function(e) {
+    //         console.log('error');
+    //     });
+    //
+    // }, function(e) {
+    //     console.log('error');
+    // });
+    // }, function(e) {
+    //   console.log('error');
+    // });
 
 
 

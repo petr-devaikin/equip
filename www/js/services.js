@@ -139,8 +139,17 @@ angular.module('starter.services', [])
       console.log('get groups request sent to server');
       var query = new Parse.Query(groupObj);
       return query.find().then(function(allGroups) {
-        for (var i = 0; i < allGroups.length; i++)
+        for (var i = 0; i < allGroups.length; i++){
           allGroups[i].followed = false;
+
+          var userNumberQuery = new Parse.Query(userGroupObj);
+          userNumberQuery.equalTo('group',allGroups[i]);
+          userNumberQuery.count().then(function(count) {
+            //allGroups[i].number = count;
+            console.log("count: "+count);
+          });
+        }
+
 
         var userGroupQuery = new Parse.Query(userGroupObj);
         userGroupQuery.equalTo('user', Parse.User.current());
@@ -154,6 +163,7 @@ angular.module('starter.services', [])
           }
           return Parse.Promise.as(allGroups);
         })
+      //});
       });
     },
     add: function(name) {
@@ -179,6 +189,7 @@ angular.module('starter.services', [])
         var users = [];
         for (var i = 0; i < userGroups.length; i++) {
           users.push(userGroups[i].get("user"));
+
         }
         return Parse.Promise.as(users);
       });
@@ -187,6 +198,15 @@ angular.module('starter.services', [])
       var userQuery = new Parse.Query(userObj);
       userQuery.notContainedIn('objectId', userInGroupIds);
       return userQuery.find();
+    },
+    userNumbGroup: function(group){
+      var userNumberQuery = new Parse.Query(userGroupObj);
+      userNumberQuery.equalTo('group',group);
+      return userNumberQuery.count().then(function(count) {
+        var count = count;
+        //console.log("count: "+count);
+        return Parse.Promise.as(count);
+      });
     },
     addUser: function(group, user) {
       var newUserGroup = new userGroupObj();
