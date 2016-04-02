@@ -5,7 +5,7 @@ Parse.Cloud.define("hello", function(request, response) {
     response.success("Hello world!");
 });
 
-function saveConvo(author, response, group, location) {
+function saveConvo(author, pins, response, group, location) {
     var userObj = Parse.Object.extend("User");
     var userConvoObj = Parse.Object.extend("UserConversation");
     var convoObj = Parse.Object.extend("Conversation");
@@ -14,6 +14,7 @@ function saveConvo(author, response, group, location) {
     var newConvo = new convoObj();
     newConvo.set("startedBy", author);
     newConvo.set("fromLocation", author.attributes.lastLocation);
+    newConvo.set("peopleNeeded", pins);
 
     if (group !== undefined)
         newConvo.set("toGroup", group);
@@ -48,6 +49,25 @@ function saveConvo(author, response, group, location) {
                     });
 
                 var authorFound = false;
+
+                // Find devices associated with these users
+                var pushQuery = new Parse.Query(Parse.Installation);
+                pushQuery.matchesQuery('user', query);
+
+                // Send push notification to query
+                Parse.Push.send({
+                  where: pushQuery,
+                  data: {
+                    alert: "Prova push"
+                  }
+                }, {
+                  success: function() {
+                    console.log("Push send OK");
+                  },
+                  error: function(error) {
+                    console.log("Push FAIL: "+ error);
+                  }
+                });
 
                 query.find().then(
                     function (userGroups) {
@@ -147,7 +167,7 @@ Parse.Cloud.define("startConversation", function(request, response) {
                 group.fetch().then(
                     function(group) {
                         console.log("start convo to group");
-                        saveConvo(author, response, group);
+                        saveConvo(author, request.params.pins, response, group);
                     },
                     function(error) {
                         response.error("cannot get group info");
@@ -160,7 +180,7 @@ Parse.Cloud.define("startConversation", function(request, response) {
                 location.fetch().then(
                     function(location) {
                         console.log("start convo to location");
-                        saveConvo(author, response, undefined, location);
+                        saveConvo(author, request.params.pins, response, undefined, location);
                     },
                     function(error) {
                         response.error("cannot get location info");
@@ -168,7 +188,7 @@ Parse.Cloud.define("startConversation", function(request, response) {
                 );
             }
             else
-                saveConvo(author, response);
+                saveConvo(author, request.params.pins, response);
         },
         function (error) {
             response.error("cannot get conversation author");

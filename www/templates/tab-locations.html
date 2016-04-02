@@ -1,9 +1,9 @@
 <ion-view view-title="">
   <ion-content>
     <ion-list>
-      <ion-toggle ng-repeat="location in locations" style="background: #EDD0BE; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
+      <ion-item ng-repeat="location in locations" style="background: #EDD0BE; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
         {{location.attributes.name}}
-      </ion-toggle>
+      </ion-item>
       <!--ion-item class="item-remove-animate item-icon-right" ng-repeat="location in locations" type="item-text-wrap"href="#/tab/locations/{{location.id}}">
         <h2>{{location.attributes.name}}</h2>
         <i class="icon ion-chevron-right icon-accessory"></i>

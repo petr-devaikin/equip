@@ -69,6 +69,12 @@
     margin-left: 15px;
 }
 
+.sign-up{
+    text-align: center;
+    font-size: 12px;
+    color: #27bfc4;
+}
+
 h1, h2, h3, h4 {
     text-transform: uppercase;
 }
@@ -92,13 +98,70 @@ h1, h2, h3, h4 {
 }
 
 .convo-header {
+    padding-right: 0;
 }
 
-.convo-header .ion-play {
+.convo-header button {
     float: right;
+    margin: -8px 0 -8px 5px;
+    height: 37px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .convo-meta {
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.convo-messages {
+    padding: 11px;
+}
+
+.equip-message {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 28px;
+    padding-top: 6px;
+    padding-left: 3px;
+    text-align: center;
+
+    background: #eee;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    margin: 5px;
+}
+
+.equip-message__info {
+    display: none;
+}
+
+.peopleneeded {
+    overflow: hidden;
+}
+
+.peopleneeded label {
+    position: relative;
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.peopleneeded .radio-content {
+    height: 40px;
+}
+
+.peopleneeded .radio-icon {
+    background: #33BDC1;
+    opacity: .5;
+    color: rgba(0, 0, 0, 0);
+}
+
+.peopleneeded .item-content {
+    padding: 6px 0 0;
+    text-align: center;
 }

@@ -21,10 +21,43 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
       StatusBar.styleDefault();
     }
 
-    Parse.initialize(
-      "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD",
-      "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2"
-    );
+    var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
+    var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
+    var clientKeyRest = "VHBsd7pKdcN62xRaCitEDGK45hP65bQlOqfHmnBA"
+
+    Parse.initialize(appId,clientKey);
+
+    parsePlugin.initialize(appId, clientKey, function() {
+      console.log('inside parse');
+      parsePlugin.subscribe('SampleChannel', function() {
+        console.log('inside subscrive');
+        parsePlugin.getInstallationId(function(id) {
+
+          console.log("installation object id: " + id)
+
+
+             //Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
+
+             var install_data = {
+                installation_id: id,
+                channels: ['SampleChannel']
+             }
+
+        }, function(e) {
+            console.log('error');
+        });
+
+    }, function(e) {
+        console.log('error');
+    });
+    }, function(e) {
+      console.log('error');
+    });
+
+
+
+
+
 
 
     //console.log(Media);
@@ -48,6 +81,12 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
     url: '/login',
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
+  })
+
+  .state('register', {
+    url: '/register',
+    templateUrl: 'templates/register.html',
+    controller: 'RegisterCtrl'
   })
 
   .state('eventDetails', {

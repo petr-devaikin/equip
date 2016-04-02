@@ -4,6 +4,17 @@ angular.module('starter.services', [])
   var msgObj = Parse.Object.extend("Message");
   var user = Parse.User.current().fetch();
 
+  var sendTestToConversation = function(convo, file) {
+    var newMsg = new msgObj();
+    var user = Parse.User.current();
+    newMsg.set('fromUser', user);
+    newMsg.set('conversation', convo);
+    if (file !== undefined)
+      newMsg.set('audioContent', file);
+    newMsg.set('fromLocation', user.attributes.lastLocation);
+    return newMsg.save();
+  }
+
   return {
     allConversations: function() {
       return Parse.Cloud.run('getConversations', {
@@ -16,43 +27,30 @@ angular.module('starter.services', [])
     getReceivers: function() {
       return Parse.Cloud.run('getReceiverList', { user: Parse.User.current().id });
     },
-    startConversationWithAll: function() {
-      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id });
+    startConversationWithAll: function(pins) {
+      return Parse.Cloud.run('startConversation', { startedBy: Parse.User.current().id, pins: pins });
     },
-    startConversationWithGroup: function(group) {
+    startConversationWithGroup: function(group, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
         group: group.id
       });
     },
-    startConversationWithLocation: function(location) {
+    startConversationWithLocation: function(location, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
-        location: location.id
+        location: location.id,
+        pins: pins
       });
     },
-    startConversationWithGroup: function(group) {
+    startConversationWithGroup: function(group, pins) {
       return Parse.Cloud.run('startConversation', {
         startedBy: Parse.User.current().id,
-        group: group.id
+        group: group.id,
+        pins: pins
       });
     },
-    startConversationWithLocation: function(location) {
-      return Parse.Cloud.run('startConversation', {
-        startedBy: Parse.User.current().id,
-        location: location.id
-      });
-    },
-    sendTestToConversation: function(convo, file) {
-      var newMsg = new msgObj();
-      var user = Parse.User.current();
-      newMsg.set('fromUser', user);
-      newMsg.set('conversation', convo);
-      if (file !== undefined)
-        newMsg.set('audioContent', file);
-      newMsg.set('fromLocation', user.attributes.lastLocation);
-      return newMsg.save();
-    },
+    sendTestToConversation: sendTestToConversation,
     sendToConversation: function(convo, msgBs64) {
       console.log('send messagge to a conversation');
 
@@ -73,6 +71,15 @@ angular.module('starter.services', [])
       return url;
       // query.exists('audioContent');
       // return query.get('audioContent');
+    },
+    pinToConvo: function(convo) {
+      var newMsg = new msgObj();
+      var user = Parse.User.current();
+      newMsg.set('fromUser', user);
+      newMsg.set('conversation', convo);
+      newMsg.set('pinned', true);
+      newMsg.set('fromLocation', user.attributes.lastLocation);
+      return newMsg.save();
     }
 
   };
@@ -89,6 +96,10 @@ angular.module('starter.services', [])
     }
   };
 })
+
+// .factory('RegistrationService', function(){
+//
+// })
 
 .factory('PeopleService', function() {
   var userObj = Parse.Object.extend("User");
