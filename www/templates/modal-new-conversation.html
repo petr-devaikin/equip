@@ -22,7 +22,7 @@
     <button class="button button-full button-positive button-left" ng-repeat="dest in destinations" ng-click="sendConversation(dest);" ng-class="!dest.featured ? 'button-outline' : '' ">
       <i class="icon ion-ios-people" ng-show="dest.entity.className == 'Group'"></i>
       <i class="icon ion-location" ng-show="dest.entity.className == 'Location'"></i>
-      {{ dest.name }}
+      {{ dest.name }} ({{dest.number}})
     </button>
 
     <br/>

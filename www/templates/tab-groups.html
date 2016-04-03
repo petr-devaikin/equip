@@ -1,16 +1,9 @@
 <ion-view view-title="">
   <ion-content>
-      <div class="card" ng-repeat="group in groups">
-      <div class="item item-divider convo-header" >
-        <span>
-          {{group.number}} <i class="icon ion-ios-people"></i>
-        </span>
-      </div>
-      <ion-toggle  ng-checked="group.followed" ng-click="follow(group)" style="background: #C9BEDA; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
-        {{group.attributes.name}}
-      </ion-toggle>
 
-    </div>
+      <ion-toggle ng-repeat="group in groups" ng-checked="group.followed" ng-click="follow(group)" style="background: #C9BEDA; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
+        {{group.attributes.name}} ({{group.number}})
+      </ion-toggle>
       <!--ion-item class="item-remove-animate item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
         <i class="icon ion-chevron-right icon-accessory"></i>
 

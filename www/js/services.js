@@ -141,28 +141,26 @@ angular.module('starter.services', [])
       return query.find().then(function(allGroups) {
         for (var i = 0; i < allGroups.length; i++){
           allGroups[i].followed = false;
-
-          var userNumberQuery = new Parse.Query(userGroupObj);
-          userNumberQuery.equalTo('group',allGroups[i]);
-          userNumberQuery.count().then(function(count) {
-            //allGroups[i].number = count;
-            console.log("count: "+count);
-          });
+          allGroups[i].number = 0;
         }
 
-
         var userGroupQuery = new Parse.Query(userGroupObj);
-        userGroupQuery.equalTo('user', Parse.User.current());
+        //userGroupQuery.equalTo('user', Parse.User.current());
         userGroupQuery.include('group');
+        userGroupQuery.include('user');
 
         return userGroupQuery.find().then(function(userGroups) {
           for (var i = 0; i < userGroups.length; i++) {
             var g = allGroups.find(function(g) { return g.id == userGroups[i].attributes.group.id; });
-            if (g !== undefined)
-              g.followed = true;
+            if (g !== undefined) {
+              g.number++;
+
+              if (userGroups[i].attributes.user.id == Parse.User.current().id)
+                g.followed = true;
+            }
           }
           return Parse.Promise.as(allGroups);
-        })
+        });
       //});
       });
     },
@@ -239,9 +237,23 @@ angular.module('starter.services', [])
 
   return {
     all: function() {
-      var query = new Parse.Query(locationObj);
       console.log('get locations request sent to server');
-      return query.find();
+      var query = new Parse.Query(locationObj);
+      return query.find().then(function(allLocation) {
+        for(var i = 0; i < allLocation.length;i++ ){
+          allLocation[i].number = 0;
+        }
+        var userNumberLoc = new Parse.Query(userObj);
+        return userNumberLoc.find().then(function(user){
+            for(var i = 0; i< user.length; i++){
+              var l = allLocation.find(function(l){ return l.id == user[i].attributes.lastLocation.id;});
+              //console.log("location user["+i+"] :"+user[i].attributes.lastLocation.id);
+              if( l!== undefined)
+                l.number++;
+            }
+            return Parse.Promise.as(allLocation);
+        });
+      });
     },
     get: function(locationId) {
       var query = new Parse.Query(locationObj);
