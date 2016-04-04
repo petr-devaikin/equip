@@ -233,7 +233,8 @@ Parse.Cloud.define("getReceiverList", function(request, response) {
     receivers.push({
         name: "All",
         featured: true,
-        entity: null
+        entity: null,
+        number:0
     });
 
     var user = new userObj();
@@ -248,7 +249,8 @@ Parse.Cloud.define("getReceiverList", function(request, response) {
                         groups[allGroups[i].id] = {
                             name: allGroups[i].attributes.name,
                             featured: false,
-                            entity: allGroups[i]
+                            entity: allGroups[i],
+                            number: 1
                         }
 
                     var query = new Parse.Query(userGroupObj);
@@ -257,6 +259,7 @@ Parse.Cloud.define("getReceiverList", function(request, response) {
                         function(userGroups) {
                             for (var i = 0; i < userGroups.length; i++)
                                 groups[userGroups[i].attributes.group.id].featured = true;
+
 
                             var groupArray = [];
                             for (var i in groups)
@@ -279,7 +282,8 @@ Parse.Cloud.define("getReceiverList", function(request, response) {
                                         locations.push({
                                             name: allLocations[i].attributes.name,
                                             featured: allLocations[i].id == user.attributes.lastLocation.id,
-                                            entity: allLocations[i]
+                                            entity: allLocations[i],
+                                            number: 1
                                         });
                                     }
 
