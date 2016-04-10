@@ -28,8 +28,13 @@
       "id": "com-badrit-base64"
     },
     {
+<<<<<<< HEAD
+      "locator": "https://github.com/phonegap-build/PushPlugin.git",
+      "id": "com.phonegap.plugins.PushPlugin"
+=======
       "locator": "https://github.com/benjie/phonegap-parse-plugin",
       "id": "org.apache.cordova.core.parseplugin"
+>>>>>>> 22fe7a2809c6c11f02106e442701eb7cd5c85abc
     }
   ],
   "cordovaPlatforms": [
