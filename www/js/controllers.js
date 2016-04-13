@@ -130,6 +130,7 @@ angular.module('starter.controllers', [])
         data[i].messages.reverse();
       }
 
+      $scope.isPlaying = false;
       $scope.conversations = data;
       $scope.$apply();
     });
@@ -382,17 +383,24 @@ angular.module('starter.controllers', [])
   $scope.playMessage = function(message){
     console.log('play message');
     $scope.readMessage(message);
+    $scope.isPlaying = true;
+
 
     var audioContentMsg = message.get('audioContent');
     if (audioContentMsg === undefined)
       console.log('Empty message');
     else {
+
       var url = audioContentMsg.url();
       console.log(url);
       var myMedia = $cordovaMedia.newMedia(url);
       myMedia.play(); // Android
     }
 
+  }
+  $scope.stopPlayMessage = function(message){
+    console.log('stopPlay');
+    $scope.isPlaying = false;
   }
 
   $scope.updateLocation = function(newLocation) {
