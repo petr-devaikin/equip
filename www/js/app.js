@@ -18,13 +18,12 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
 
 
   var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
-  var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
+  var clientKey = "ldTDKmu37Z2maChsqkSCffKzATqQbD5u3Jq48ZI7";
   var jsKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
 
 
   console.log("initialize");
   Parse.initialize(appId,jsKey);
-  Parse._getInstallationId();
 
   $ionicPlatform.ready(function() {
 
@@ -40,12 +39,17 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
       StatusBar.styleDefault();
     }
 
+    console.log("Trying to initialize window.parsePlugin");
+
+    window.parsePlugin.initialize(appId,clientKey,function(){
+      console.log("INSTALLATION ALL GOOD");
+    });
+
     window.parsePlugin.registerCallback('onNotification', function() {
         window.onNotification = function(notificationObject) {
           var json = notificationObject;
           console.log("PUSH NOTIFICATION RECEIVED: "+JSON.stringify(json));
           //If the JSON of the push does not include a conversationId it is a simple reminder, so we go to the agenda
-
 
           var isForeground = notificationObject.receivedInForeground;
           if(isForeground) {
