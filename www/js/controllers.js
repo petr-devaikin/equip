@@ -102,6 +102,7 @@ angular.module('starter.controllers', [])
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
                                      $ionicModal) {
   var readMessages = [];
+  var myMedia;
 
   $scope.readMessage = function(msg) {
     readMessages.push(msg.id);
@@ -390,10 +391,9 @@ angular.module('starter.controllers', [])
     if (audioContentMsg === undefined)
       console.log('Empty message');
     else {
-
       var url = audioContentMsg.url();
       console.log(url);
-      var myMedia = $cordovaMedia.newMedia(url);
+      myMedia = $cordovaMedia.newMedia(url);
       myMedia.play(); // Android
     }
 
@@ -401,6 +401,7 @@ angular.module('starter.controllers', [])
   $scope.stopPlayMessage = function(message){
     console.log('stopPlay');
     $scope.isPlaying = false;
+    myMedia.stop();
   }
 
   $scope.updateLocation = function(newLocation) {

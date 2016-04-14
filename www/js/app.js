@@ -6,17 +6,27 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.services'])
+.config(function($ionicConfigProvider) {
+  $ionicConfigProvider.scrolling.jsScrolling(false);
 
+  // Or for only a single platform, use
+  // if( ionic.Platform.isAndroid() ) {
+    // $ionicConfigProvider.scrolling.jsScrolling(false);
+  // }
+})
 .run(function($ionicPlatform) {
+
+
+  var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
+  var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
+  var jsKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
+
+
+  console.log("initialize");
+  Parse.initialize(appId,jsKey);
+  Parse._getInstallationId();
+
   $ionicPlatform.ready(function() {
-
-
-    var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
-    var clientKey = "nJSHJAaHOpvh7Yk1ZDwNnfP9RzpyOMBWljP0WoK2";
-    //var clientKeyRest = "VHBsd7pKdcN62xRaCitEDGK45hP65bQlOqfHmnBA";
-
-    console.log("initialize");
-    Parse.initialize(appId,clientKey);
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -29,6 +39,73 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+    window.parsePlugin.registerCallback('onNotification', function() {
+        window.onNotification = function(notificationObject) {
+          var json = notificationObject;
+          console.log("PUSH NOTIFICATION RECEIVED: "+JSON.stringify(json));
+          //If the JSON of the push does not include a conversationId it is a simple reminder, so we go to the agenda
+
+
+          var isForeground = notificationObject.receivedInForeground;
+          if(isForeground) {
+            console.log("PUSH IS FOREGROUND")
+          } else {
+            console.log("PUSH IS BACKGROUND")
+          }
+          //We are opening the app with the notification, let's go to the conversations view
+          // var actionAfterPush = function(theConversation) {
+          //   if (isForeground) {
+          //     var currentURL = "" + window.location;
+          //     console.log("Current URL: "+currentURL);
+          //     var possibleTheConversationId = currentURL.split('/').pop();
+          //     console.log("Extracted conversation id: "+possibleTheConversationId);
+          //     if (possibleTheConversationId === json.conversationId) {
+          //       console.log("We are at the conversation where we should show the push");
+          //       $rootScope.$apply();
+          //     } else {
+          //       console.log("Broadcasting messageReceived");
+          //       $rootScope.$broadcast('messageReceived',json.conversationId);
+          //     }
+          //   } else {
+          //     $state.go('app.tab.conversations', {goToConversation: json.conversationId});
+          //     // setTimeout(function(){
+          //     //   $state.go('app.tab.conversation-detail', {conversationId: json.conversationId});
+          //     // }, 300);
+          //   }
+          // }
+          // var conversation = ParseService.getConversation(json.conversationId);
+          // if (conversation === undefined) {
+          //   ParseService.allConversations(
+          //     function success(results){
+          //       actionAfterPush(ParseService.getConversation(json.conversationId));
+          //     },
+          //     function fail(model, error){
+          //       console.log("Couldn't retrieve the conversation of the user "+ JSON.stringify(error));
+          //     }
+          //   );
+          // } else {
+          //   //Load the new message on the conversation
+          //   ParseService.loadOneConversation(json.conversationId,
+          //     function success(updatedConversation) {
+          //       console.log("We fetched conversation: "+ JSON.stringify(updatedConversation));
+          //       console.log("We fetched last_message: "+ JSON.stringify(updatedConversation.get("last_message")));
+          //       // The object was refreshed successfully.
+          //       // conversation.set('last_message',updatedLastMessage);
+          //       actionAfterPush(updatedConversation);
+          //     },
+          //     function error(error) {
+          //       // The object was not refreshed successfully.
+          //       // error is a Parse.Error with an error code and message.
+          //       console.log("Couldn't fetch conversation of the user "+ JSON.stringify(error));
+          //     }
+          //   );
+          // }
+        };
+      }, function(error) {
+        console.error("parsePlugin.registerCallback error");
+      });
+
 
 
 

@@ -43,7 +43,7 @@
 
       <div class="item item-text-wrap convo-messages">
         <div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read || (convo.conversation.attributes.peopleNeeded && convo.pinned) ? '' : '#33BDC1' }">
-          <i class="icon ion-play" ng-click="playMessage(message)" ng-show="!message.attributes.pinned" ></i>
+          <i class="icon ion-play" ng-click="playMessage(message)" ng-show="!message.attributes.pinned"></i>
           <i class="icon ion-pin" style="color: #007700;" ng-click="playMessage(message)" ng-show="message.attributes.pinned"></i>
           <!--div class="equip-message__info">
             @<span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
