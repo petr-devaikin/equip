@@ -159,19 +159,25 @@ Parse.Cloud.define("startConversation", function(request, response) {
 
     var author = new userObj();
     author.id = request.params.startedBy;
-
-    if (request.params.group !== undefined) {
-        var group = new groupObj();
-        group.id = request.params.group;
-        saveConvo(author, request.params.pins, response, group);
-    }
-    else if (request.params.location !== undefined) {
-        var location = new locationObj();
-        location.id = request.params.location;
-        saveConvo(author, request.params.pins, response, undefined, location);
-    }
-    else
-        saveConvo(author, request.params.pins, response);
+    author.fetch().then(
+        function (author) {
+            if (request.params.group !== undefined) {
+                var group = new groupObj();
+                group.id = request.params.group;
+                saveConvo(author, request.params.pins, response, group);
+            }
+            else if (request.params.location !== undefined) {
+                var location = new locationObj();
+                location.id = request.params.location;
+                saveConvo(author, request.params.pins, response, undefined, location);
+            }
+            else
+                saveConvo(author, request.params.pins, response);
+        },
+        function (error) {
+            response.error("cannot get conversation author");
+        }
+    );
 
 });
 
