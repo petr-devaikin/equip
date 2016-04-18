@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.services', 'pubnub.angular.service'])
 .config(function($ionicConfigProvider) {
   $ionicConfigProvider.scrolling.jsScrolling(false);
 
@@ -24,6 +24,7 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
 
   console.log("initialize");
   Parse.initialize(appId,jsKey);
+
 
   $ionicPlatform.ready(function() {
 

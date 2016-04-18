@@ -100,7 +100,7 @@ angular.module('starter.controllers', [])
 
 .controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
-                                     $ionicModal) {
+                                     $ionicModal, PubNub) {
   var readMessages = [];
   var myMedia;
 
@@ -109,6 +109,14 @@ angular.module('starter.controllers', [])
     msg.read = true;
   }
 
+  PubNub.init({
+    publish_key: 'pub-c-4d2f0d68-5c2a-4d64-aa54-9d382997d717',
+    subscribe_key: 'sub-c-fbba2b9a-059b-11e6-a6dc-02ee2ddab7fe',
+  })
+  PubNub.ngSubscribe({ channel: 'equipmain' })
+  $scope.$on(PubNub.ngMsgEv('equipmain'), function(event, payload) {
+      console.log(payload.message);
+  });
 
   function updateConversationList() {
     MessageService.allConversations().then(function(rawData) {
