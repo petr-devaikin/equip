@@ -291,4 +291,84 @@ angular.module('starter.services', [])
       return user.save();
     }
   };
+})
+
+.factory('PubNub', function() {
+  var pubnub = null;
+  var authKey = PUBNUB.uuid();
+
+  console.log(authKey);
+
+  pubnub = PUBNUB.init({
+    publish_key: 'pub-c-4d2f0d68-5c2a-4d64-aa54-9d382997d717',
+    subscribe_key: 'sub-c-fbba2b9a-059b-11e6-a6dc-02ee2ddab7fe',
+    auth_key: authKey,
+    origin: 'pubsub.pubnub.com',
+    ssl: true
+  });
+
+  var isOnline = false;
+  var onConnect = function(onOnlineStatusChanged) {
+    var changed = isOnline === false;
+    isOnline = true;
+    if (typeof onOnlineStatusChanged === "function") {
+      if (changed) {
+        onOnlineStatusChanged(true);
+      }
+    }
+  };
+  var ret =
+  {
+    uuid: authKey,
+    publish: function(channel, message) {
+      message.source = authKey;
+      info = {
+        channel: channel,
+        message: JSON.stringify(message)
+      };
+      pubnub.publish(info);
+    },
+    subscribe: function(channel, callback) {
+      var result = pubnub.subscribe({
+        channel: channel,
+        callback: function(message) {
+          callback(message);
+        },
+        error: function(message) {
+          callback(message);
+        }
+      });
+    },
+    onOnlineStatusChanged: function(callback) {
+      var result = pubnub.subscribe({
+        channel: 'broadcast',
+        callback: function(message) {
+          if (message.length < 2 || message.indexOf('{') !== 0) {
+            return;
+          }
+          console.log(JSON.parse(message));
+        },
+        connect: function() {
+          onConnect(callback);
+        },
+        disconnect: function() {
+          var changed = isOnline === true;
+          isOnline = false;
+          if (typeof callback === "function") {
+            if (changed) {
+              callback(false);
+            }
+          }
+        },
+        reconnect: function() {
+          onConnect(callback);
+        },
+        restore: true,
+        error: function(message) {
+          console.log(message);
+        }
+      });
+    }
+  };
+  return ret;
 });
