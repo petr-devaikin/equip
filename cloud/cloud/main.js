@@ -163,28 +163,12 @@ Parse.Cloud.define("startConversation", function(request, response) {
     if (request.params.group !== undefined) {
         var group = new groupObj();
         group.id = request.params.group;
-        group.fetch().then(
-            function(group) {
-                console.log("start convo to group");
-                saveConvo(author, request.params.pins, response, group);
-            },
-            function(error) {
-                response.error("cannot get group info");
-            }
-        );
+        saveConvo(author, request.params.pins, response, group);
     }
     else if (request.params.location !== undefined) {
         var location = new locationObj();
         location.id = request.params.location;
-        location.fetch().then(
-            function(location) {
-                console.log("start convo to location");
-                saveConvo(author, request.params.pins, response, undefined, location);
-            },
-            function(error) {
-                response.error("cannot get location info");
-            }
-        );
+        saveConvo(author, request.params.pins, response, undefined, location);
     }
     else
         saveConvo(author, request.params.pins, response);
