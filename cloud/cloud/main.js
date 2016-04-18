@@ -105,7 +105,7 @@ function saveConvo(author, pins, response, group, location) {
                     newUserConvo.save();
                 }
 
-                
+
 
                 // add others at location
                 var query = new Parse.Query(userObj);
@@ -210,34 +210,43 @@ Parse.Cloud.define("getConversations", function(request, response) {
     user.id = request.params.user;
     user.fetch().then(
         function (user) {
-            query = new Parse.Query(userConvoObj);
+            var query = new Parse.Query(userConvoObj);
             query.equalTo("user", user);
             query.include("conversation");
-            query
-                .each(function (userConvo) {
-                    var convo = new Parse.Query(convoObj);
-                    convo.include("startedBy");
-                    convo.include("toGroup");
-                    convo.include("toLocation");
-                    return convo.get(userConvo.attributes.conversation.id)
-                        .then(function(c) {
-                            var msgQuery = new Parse.Query(messageObj);
-                            msgQuery.equalTo("conversation", c);
-                            msgQuery.include("fromUser");
-                            msgQuery.include("fromLocation");
-                            return msgQuery.find().then(function (messages) {
-                                list.push({ conversation: c, messages: messages });
-                            });
-                        });
-                })
-                .then(
-                    function () {
-                        response.success(list);
-                    },
-                    function (error) {
-                        response.error("cannot get list of conversations: " + error);
+
+
+            query.find().then(
+                function (userConversations) {
+                    var conversations = [];
+                    var result = {}
+                    for (var i = 0; i < userConversations.length; i++) {
+                        var c = userConversations[i].attributes.conversation;
+                        conversations.push(c);
+                        result[c.id] = { conversation: c, messages: [] };
                     }
-                );
+
+                    var msgQuery = new Parse.Query(messageObj);
+                    msgQuery.containedIn("conversation", conversations);
+                    msgQuery.include("fromUser");
+                    msgQuery.include("fromLocation");
+
+                    msgQuery.find().then(
+                        function (messages) {
+                            for (var i = 0; i < messages.length; i++) {
+                                var c = result[messages[i].attributes.conversation.id];//conversations.find
+                                c.messages.push(messages[i]);
+                            }
+
+                            response.success(result);
+                        },
+                        function (error) {
+                            response.error("cannot get list of messages: " + error);
+                        });
+                },
+                function (error) {
+                    response.error("cannot get list of conversations: " + error);
+                }
+            );
         },
         function (obj, error) {
             response.error("cannot get user: " + error);

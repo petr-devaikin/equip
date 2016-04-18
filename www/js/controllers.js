@@ -111,7 +111,12 @@ angular.module('starter.controllers', [])
 
 
   function updateConversationList() {
-    MessageService.allConversations().then(function(data) {
+    MessageService.allConversations().then(function(rawData) {
+      var data = [];
+      for (var key in rawData) {
+        data.push(rawData[key]);
+      }
+
       data.sort(function(a, b) {
         return new Date(b.conversation.attributes.createdAt) - new Date(a.conversation.attributes.createdAt);
       });
