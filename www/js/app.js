@@ -110,42 +110,6 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
         console.error("parsePlugin.registerCallback error");
       });
 
-
-
-
-    // parsePlugin.initialize(appId, clientKey, function() {
-    //   console.log('inside parse');
-    //   parsePlugin.subscribe('SampleChannel', function() {
-    //     console.log('inside subscrive');
-    //     parsePlugin.getInstallationId(function(id) {
-    //
-    //       console.log("installation object id: " + id)
-    //
-    //
-    //          //Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
-    //
-    //          var install_data = {
-    //             installation_id: id,
-    //             channels: ['SampleChannel']
-    //          }
-    //
-    //     }, function(e) {
-    //         console.log('error');
-    //     });
-    //
-    // }, function(e) {
-    //     console.log('error');
-    // });
-    // }, function(e) {
-    //   console.log('error');
-    // });
-
-
-
-
-
-
-
     //console.log(Media);
     if (navigator.device)
       console.log(navigator.device.capture);

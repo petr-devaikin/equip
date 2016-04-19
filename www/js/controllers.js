@@ -102,12 +102,17 @@ angular.module('starter.controllers', [])
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
                                      $ionicModal) {
   var readMessages = [];
-  var playingMessage;
-  var myMedia;
+  var idPlayingMessage = 0;
+  var myMedia = null;
 
   $scope.readMessage = function(msg) {
     readMessages.push(msg.id);
     msg.read = true;
+  }
+
+  $scope.playingMessage = function(msg){
+    idPlayingMessage = msg.id;
+    msg.isPlaying = true;
   }
 
 
@@ -391,17 +396,16 @@ angular.module('starter.controllers', [])
 
   $scope.playMessage = function(message){
     console.log('play message');
+    $scope.playingMessage(message);
     $scope.readMessage(message);
-    message.isPlaying = true;
-    if(message.isPlaying)
-      console.log("playing");
-
 
     var audioContentMsg = message.get('audioContent');
     if (audioContentMsg === undefined){
       console.log('Empty message');
-      message.isPlaying = false;
-
+      if(idPlayingMessage === message.id){
+        message.isPlaying = false;
+        idPlayingMessage=0;
+      }
     }
     else {
       var url = audioContentMsg.url();
@@ -409,7 +413,10 @@ angular.module('starter.controllers', [])
       myMedia = $cordovaMedia.newMedia(url,
         function(){
             console.log("playAudio():Audio Success");
-            message.isPlaying = false;
+            if(idPlayingMessage === message.id){
+              message.isPlaying = false;
+              idPlayingMessage=0;
+            }
         },
         // error callback
         function (err) {
@@ -417,16 +424,23 @@ angular.module('starter.controllers', [])
         });
       myMedia.play(); // Android
     }
-
   }
+
   $scope.stopPlayMessage = function(message){
     console.log('stopPlay');
-    if(window.plugins=== undefined)
-      message.isPlaying = false;
-    else {
-      myMedia.stop().then(function(){
+    if(window.plugins=== undefined){
+      if(idPlayingMessage === message.id){
         message.isPlaying = false;
-      });
+        idPlayingMessage=0;
+      }
+    }
+    else if(myMedia){
+      myMedia.stop();
+      myMedia.release();
+      if(idPlayingMessage === message.id){
+        message.isPlaying = false;
+        idPlayingMessage=0;
+      }
     }
   }
 
