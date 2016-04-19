@@ -102,6 +102,7 @@ angular.module('starter.controllers', [])
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
                                      $ionicModal) {
   var readMessages = [];
+  var playingMessage;
   var myMedia;
 
   $scope.readMessage = function(msg) {
@@ -130,13 +131,15 @@ angular.module('starter.controllers', [])
             counter++;
           if (readMessages.indexOf(data[i].messages[j].id) != -1)
             data[i].messages[j].read = true;
+
+          data[i].messages[j].isPlaying = false;
         }
 
         data[i].pinned = counter;
         data[i].messages.reverse();
       }
 
-      $scope.isPlaying = false;
+
       $scope.conversations = data;
       $scope.$apply();
     });
@@ -389,24 +392,42 @@ angular.module('starter.controllers', [])
   $scope.playMessage = function(message){
     console.log('play message');
     $scope.readMessage(message);
-    $scope.isPlaying = true;
+    message.isPlaying = true;
+    if(message.isPlaying)
+      console.log("playing");
 
 
     var audioContentMsg = message.get('audioContent');
-    if (audioContentMsg === undefined)
+    if (audioContentMsg === undefined){
       console.log('Empty message');
+      message.isPlaying = false;
+
+    }
     else {
       var url = audioContentMsg.url();
       console.log(url);
-      myMedia = $cordovaMedia.newMedia(url);
+      myMedia = $cordovaMedia.newMedia(url,
+        function(){
+            console.log("playAudio():Audio Success");
+            message.isPlaying = false;
+        },
+        // error callback
+        function (err) {
+            console.log("playAudio():Audio Error: " + err);
+        });
       myMedia.play(); // Android
     }
 
   }
   $scope.stopPlayMessage = function(message){
     console.log('stopPlay');
-    $scope.isPlaying = false;
-    myMedia.stop();
+    if(window.plugins=== undefined)
+      message.isPlaying = false;
+    else {
+      myMedia.stop().then(function(){
+        message.isPlaying = false;
+      });
+    }
   }
 
   $scope.updateLocation = function(newLocation) {
