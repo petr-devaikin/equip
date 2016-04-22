@@ -14,7 +14,7 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
     // $ionicConfigProvider.scrolling.jsScrolling(false);
   // }
 })
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $state) {
 
 
   var appId= "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD";
@@ -43,6 +43,15 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
 
     window.parsePlugin.initialize(appId,clientKey,function(){
       console.log("INSTALLATION ALL GOOD");
+      window.parsePlugin.subscribe('SampleChannel', function() {
+        window.parsePlugin.getInstallationId(function(id){
+          console.log("INSTALLATION CHANNEL");
+          var install_data = {
+                  installation_id: id,
+                  channels: ['SampleChannel']
+               }
+        });
+      });
     });
 
     window.parsePlugin.registerCallback('onNotification', function() {
@@ -56,6 +65,7 @@ angular.module('starter', ['ionic','ngCordova', 'starter.controllers', 'starter.
             console.log("PUSH IS FOREGROUND")
           } else {
             console.log("PUSH IS BACKGROUND")
+            $state.go('tab.messages');
           }
           //We are opening the app with the notification, let's go to the conversations view
           // var actionAfterPush = function(theConversation) {

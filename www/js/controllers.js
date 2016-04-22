@@ -293,9 +293,6 @@ angular.module('starter.controllers', [])
         directory = cordova.file.externalRootDirectory; // for Android
       }
 
-      //console.log(directory);
-      //console.log(fileName);
-
       $cordovaFile.copyFile(
         cordova.file.dataDirectory, fileName,
         directory, "audioFileEquip.m4a"
@@ -304,7 +301,7 @@ angular.module('starter.controllers', [])
         window.plugins.Base64.encodeFile(allPath, function(base64){
           var base64Audio= base64.substring(34);
 
-          console.log('file base64 encoding: ' + base64Audio);
+          console.log('file base64 encoded...');
           callback(base64Audio);
         });
       }, function (error) {
@@ -554,6 +551,7 @@ angular.module('starter.controllers', [])
     });
   }
 })
+
 .controller('LocationDetailCtrl', function($scope, $state, $stateParams, LocationService, MessageService) {
   function updateLocationInfo() {
     LocationService.get($stateParams.locationId).then(function(data) {

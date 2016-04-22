@@ -29,45 +29,7 @@ function saveConvo(author, pins, response, group, location) {
                 query.equalTo("group", group);
                 query.include("user");
 
-                // Find devices associated with these users
-                var pushQuery = new Parse.Query(Parse.Installation);
-                pushQuery.matchesQuery('user', query);
-
-                // Send push notification to query
-                    Parse.Push.send({
-                        where: pushQuery,
-                        data: {
-                            alert: "New message on group"
-                        }
-                    }, {
-                        success: function() {
-                            console.log("push sent");
-                        },
-                        error: function(error) {
-                            console.log("push faild: "+error);
-                        }
-                    });
-
                 var authorFound = false;
-
-                // Find devices associated with these users
-                // var pushQuery = new Parse.Query(Parse.Installation);
-                // pushQuery.matchesQuery('user', query);
-                //
-                // // Send push notification to query
-                // Parse.Push.send({
-                //   where: pushQuery,
-                //   data: {
-                //     alert: "Prova push"
-                //   }
-                // }, {
-                //   success: function() {
-                //     console.log("Push send OK");
-                //   },
-                //   error: function(error) {
-                //     console.log("Push FAIL: "+ error);
-                //   }
-                // });
 
                 query.find().then(
                     function (userGroups) {
@@ -170,8 +132,9 @@ Parse.Cloud.define("startConversation", function(request, response) {
         location.id = request.params.location;
         saveConvo(author, request.params.pins, response, undefined, location);
     }
-    else
+    else{
         saveConvo(author, request.params.pins, response);
+        }
 
 });
 

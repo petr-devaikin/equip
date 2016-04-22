@@ -3,6 +3,7 @@ angular.module('starter.services', [])
 .factory('MessageService', function($cordovaFile) {
   var msgObj = Parse.Object.extend("Message");
   var user = Parse.User.current().fetch();
+  var userObj = Parse.Object.extend('User');
 
   var sendTestToConversation = function(convo, file) {
     var newMsg = new msgObj();
@@ -53,6 +54,60 @@ angular.module('starter.services', [])
     sendTestToConversation: sendTestToConversation,
     sendToConversation: function(convo, msgBs64) {
       console.log('send messagge to a conversation');
+
+      var pushQuery = new Parse.Query(Parse.Installation);
+      pushQuery.equalTo('channels', 'SampleChannel');
+
+      if(convo.attributes.toGroup){
+        console.log('send messagge to group');
+          Parse.Push.send({
+              where: pushQuery,
+              data: {
+                  alert: "New messagge to "+convo.attributes.toGroup.attributes.name+" from "+Parse.User.current().attributes.username
+              }
+          },
+          {
+              success: function() {
+                  console.log("push sent");
+              },
+              error: function(error) {
+                  console.log("push faild: "+error);
+              }
+          });
+        } else if (convo.attributes.toLocation) {
+          console.log('send messagge to a location');
+              Parse.Push.send({
+                  where: pushQuery,
+                  data: {
+                      alert: "New messagge to "+convo.attributes.toLocation.attributes.name+" from "+Parse.User.current().attributes.username
+                  }
+              },
+              {
+                  success: function() {
+                      console.log("push sent");
+                  },
+                  error: function(error) {
+                      console.log("push faild: "+error);
+                  }
+              });
+        } else {
+          console.log('send messagge to a all');
+          Parse.Push.send({
+              where: pushQuery,
+              data: {
+                  alert: "New messagge to all from "+Parse.User.current().attributes.username
+              }
+          },
+          {
+              success: function() {
+                  console.log("push sent");
+              },
+              error: function(error) {
+                  console.log("push faild: "+error);
+              }
+          });
+
+        }
 
       var file = new Parse.File('AFprova.m4a', { base64: msgBs64 });
       return file.save().then(function() {
