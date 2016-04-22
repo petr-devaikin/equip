@@ -33,7 +33,7 @@
         <span style="font-weight: bold; text-transform: uppercase;">{{ convo.conversation.attributes.fromLocation.attributes.name }}</span>
         /
         <span style="font-weight: bold; text-transform: uppercase;">
-          {{ convo.conversation.attributes.createdAt.getUTCHours() + ":" + convo.conversation.attributes.createdAt.getUTCMinutes(); }}
+          {{ convo.conversation.attributes.createdAt.getUTCHours()+2 + ":" + convo.conversation.attributes.createdAt.getUTCMinutes(); }}
         </span>
 
         <span style="position: relative; float: right; font-weight: bold;" ng-show="convo.conversation.attributes.peopleNeeded">
