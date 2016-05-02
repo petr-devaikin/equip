@@ -306,7 +306,7 @@ angular.module('starter.services', [])
         var userNumberLoc = new Parse.Query(userObj);
         return userNumberLoc.find().then(function(user){
             for(var i = 0; i< user.length; i++){
-              var l = allLocation.find(function(l){ return l.id == user[i].attributes.lastLocation.id;});
+              var l = allLocation.find(function(l){ return user[i].attributes.lastLocation !== undefined && l.id == user[i].attributes.lastLocation.id;});
               //console.log("location user["+i+"] :"+user[i].attributes.lastLocation.id);
               if( l!== undefined)
                 l.number++;
