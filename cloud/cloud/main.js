@@ -122,19 +122,25 @@ Parse.Cloud.define("startConversation", function(request, response) {
     var author = new userObj();
     author.id = request.params.startedBy;
 
-    if (request.params.group !== undefined) {
-        var group = new groupObj();
-        group.id = request.params.group;
-        saveConvo(author, request.params.pins, response, group);
-    }
-    else if (request.params.location !== undefined) {
-        var location = new locationObj();
-        location.id = request.params.location;
-        saveConvo(author, request.params.pins, response, undefined, location);
-    }
-    else{
-        saveConvo(author, request.params.pins, response);
+    author.fetch().then(
+        function (author) {
+            if (request.params.group !== undefined) {
+                var group = new groupObj();
+                group.id = request.params.group;
+                saveConvo(author, request.params.pins, response, group);
+            }
+            else if (request.params.location !== undefined) {
+                var location = new locationObj();
+                location.id = request.params.location;
+                saveConvo(author, request.params.pins, response, undefined, location);
+            }
+            else
+                saveConvo(author, request.params.pins, response);
+        },
+        function (error) {
+            response.error("cannot get conversation author");
         }
+    );
 
 });
 
@@ -153,6 +159,9 @@ Parse.Cloud.define("getConversations", function(request, response) {
     var query = new Parse.Query(userConvoObj);
     query.equalTo("user", user);
     query.include("conversation");
+    query.include("conversation.fromLocation");
+    query.include("conversation.toLocation");
+    query.include("conversation.toGroup");
 
 
     query.find().then(
@@ -287,4 +296,21 @@ Parse.Cloud.define("getReceiverList", function(request, response) {
             response.error("cannot get user: " + error);
         }
     );
+});
+
+Parse.Cloud.afterSave("Message", function (request) {
+    if (!request.object.existed()) {
+        // a new user...
+        console.log("afterSave message id:" + request.object.id);
+        // count number of users
+        Parse.Cloud.httpRequest({
+            url: 'http://pubsub.pubnub.com/publish/pub-c-4d2f0d68-5c2a-4d64-aa54-9d382997d717/sub-c-fbba2b9a-059b-11e6-a6dc-02ee2ddab7fe/0/equipmain/0/%22new_message%22',
+            success: function(httpResponse) {
+                console.log(httpResponse.text);
+            },
+            error: function(httpResponse) {
+                console.error('Request failed with response code ' + httpResponse.status);
+            }
+        });
+    }
 });

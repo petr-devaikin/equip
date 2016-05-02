@@ -5,7 +5,7 @@
       <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
     </div>
 
-    <div class="card" ng-repeat="convo in conversations" ng-style="{ 'opacity': convo.conversation.attributes.peopleNeeded && convo.pinned == convo.conversation.attributes.peopleNeeded ? '.3' : '1' }">
+    <div class="card" ng-repeat="convo in conversations" ng-style="{ 'opacity': convo.conversation.attributes.peopleNeeded && convo.pinned >= convo.conversation.attributes.peopleNeeded ? '.3' : '1' }">
       <div class="item item-divider convo-header">
         <span ng-show="convo.conversation.attributes.toGroup">
           <i class="icon ion-ios-people"></i> {{ convo.conversation.attributes.toGroup.attributes.name }}
@@ -27,14 +27,12 @@
       </div>
 
       <div class="item item-text-wrap convo-meta">
-        @<span style="font-weight: bold; text-transform: uppercase;">{{ convo.conversation.attributes.startedBy.attributes.username }}</span>
-        /
-        <i class="icon icon-location"></i>
-        <span style="font-weight: bold; text-transform: uppercase;">{{ convo.conversation.attributes.fromLocation.attributes.name }}</span>
-        /
-        <span style="font-weight: bold; text-transform: uppercase;">
-          {{ convo.conversation.attributes.createdAt.getUTCHours()+2 + ":" + convo.conversation.attributes.createdAt.getUTCMinutes(); }}
+        <span style="font-weight: bold; text-transform: uppercase;">{{ convo.conversation.attributes.startedBy.attributes.username }}</span>
+        <span style="text-transform: uppercase;">
+          ({{ convo.conversation.attributes.createdAt | date : "HH:mm:ss" }},
         </span>
+        <i class="icon ion-location"></i>
+        <span style="text-transform: uppercase;">{{ convo.conversation.attributes.fromLocation.attributes.name }})</span>
 
         <span style="position: relative; float: right; font-weight: bold;" ng-show="convo.conversation.attributes.peopleNeeded">
           {{ convo.pinned }}/{{ convo.conversation.attributes.peopleNeeded }} <i class="icon ion-pin"></i>
@@ -42,7 +40,8 @@
       </div>
 
       <div class="item item-text-wrap convo-messages">
-        <div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read || (convo.conversation.attributes.peopleNeeded && convo.pinned) ? '' : '#33BDC1' }">
+        <div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read ? '' : '#33BDC1' }">
+        <!--div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read || (convo.conversation.attributes.peopleNeeded && convo.pinned) ? '' : '#33BDC1' }"-->
           <i class="icon ion-play" ng-click="playMessage(message)" ng-show="!message.attributes.pinned && !message.isPlaying"></i>
           <i class="icon ion-pause" ng-click="stopPlayMessage(message)" ng-show="!message.attributes.pinned && message.isPlaying"></i>
           <i class="icon ion-pin" style="color: #007700;" ng-click="playMessage(message)" ng-show="message.attributes.pinned"></i>

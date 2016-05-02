@@ -100,10 +100,11 @@ angular.module('starter.controllers', [])
 
 .controller('MessagesCtrl', function($scope, MessageService, $cordovaCapture, $cordovaNativeAudio, PeopleService,
                                      LocationService, $cordovaFile, $cordovaMedia, $ionicSlideBoxDelegate,
-                                     $ionicModal) {
+                                     $ionicModal, PubNub) {
   var readMessages = [];
   var idPlayingMessage = 0;
   var myMedia = null;
+  var rawConversations = {};
 
   $scope.readMessage = function(msg) {
     readMessages.push(msg.id);
@@ -115,36 +116,72 @@ angular.module('starter.controllers', [])
     msg.isPlaying = true;
   }
 
+  PubNub.subscribe('equipmain', function(message) {
+    console.log('Msg from pubnub: ' + message);
+    updateConversationList();
+  });
 
   function updateConversationList() {
     MessageService.allConversations().then(function(rawData) {
       var data = [];
+
       for (var key in rawData) {
-        data.push(rawData[key]);
+        if (!(key in rawConversations)) {
+          // copy new conversation
+          rawConversations[key] = rawData[key];
+          rawConversations[key].pinned = 0;
+
+          for (var i = 0; i < rawConversations[key].messages.length; i++) {
+            if (rawConversations[key].messages[i].attributes.pinned)
+              rawConversations[key].pinned++;
+          }
+        }
+        else {
+          // copy new messages
+          var newMsgCount = rawData[key].messages.length - rawConversations[key].messages.length;
+          if (newMsgCount > 0) {
+            var newMessages = rawData[key].messages.slice(0, newMsgCount);
+            for (var i = 0; i < newMessages.length; i++) {
+              // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              // MATTIA, show notifications here
+              // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+              // if we have new pin
+              if (newMessages[i].attributes.pinned)
+                rawConversations[key].pinned++;
+            }
+
+            Array.prototype.unshift.apply(rawConversations[key].messages, newMessages);
+          }
+        }
+
+        rawConversations[key].lastMessageDate = rawConversations[key].messages[0].attributes.createdAt;
+
+        data.push(rawConversations[key]);
       }
 
       data.sort(function(a, b) {
-        return new Date(b.conversation.attributes.createdAt) - new Date(a.conversation.attributes.createdAt);
+        return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
       });
 
-      for (var i = 0; i < data.length; i++) {
-        data[i].pinned = 0;
-        var counter = 0;
+      // for (var i = 0; i < data.length; i++) {
+      //   data[i].pinned = 0;
+      //   var counter = 0;
+      //
+      //   for (var j = 0; j < data[i].messages.length; j++) {
+      //     if (data[i].messages[j].attributes.pinned)
+      //       counter++;
+      //     if (readMessages.indexOf(data[i].messages[j].id) != -1)
+      //       data[i].messages[j].read = true;
+      //
+      //     data[i].messages[j].isPlaying = false;
+      //   }
+      //
+      //   data[i].pinned = counter;
+      //   data[i].messages.reverse();
+      // }
 
-        for (var j = 0; j < data[i].messages.length; j++) {
-          if (data[i].messages[j].attributes.pinned)
-            counter++;
-          if (readMessages.indexOf(data[i].messages[j].id) != -1)
-            data[i].messages[j].read = true;
-
-          data[i].messages[j].isPlaying = false;
-        }
-
-        data[i].pinned = counter;
-        data[i].messages.reverse();
-      }
-
-
+      $scope.isPlaying = false;
       $scope.conversations = data;
       $scope.$apply();
     });
@@ -180,7 +217,7 @@ angular.module('starter.controllers', [])
     });
   }
 
-  var updateTimer = undefined;
+  //var updateTimer = undefined;
 
   // init modals
 
@@ -193,10 +230,10 @@ angular.module('starter.controllers', [])
     // check location and start timer
     checkLocation();
 
-    updateTimer = setInterval(function() {
+    /*updateTimer = setInterval(function() {
       updateConversationList();
       checkLocation();
-    }, 5000);
+    }, 5000);*/
   });
 
   $scope.askForLocation = function() {
@@ -228,7 +265,7 @@ angular.module('starter.controllers', [])
   });
 
   $scope.$on('$ionicView.leave', function (viewInfo, state) {
-    clearInterval(updateTimer);
+    //clearInterval(updateTimer);
   });
 
   $scope.pinToConversation = function(convo) {
