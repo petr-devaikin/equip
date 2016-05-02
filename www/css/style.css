@@ -1,1 +1,167 @@
 /* Empty. Add your own CSS if you like */
+.bar.bar-stable {
+    background-color: #fff;
+}
+
+.header-item {
+    background-image: url(../img/equip.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 80px;
+}
+
+.button-left {
+    text-align: left;
+    padding-left: 40px;
+}
+
+.button-left i {
+    position: absolute;
+    left: 12px;
+}
+
+.button.button-positive {
+    background-color: #33BDC1;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.button.button-positive.button-outline {
+    border: 1px solid #33BDC1;
+    color: #33BDC1;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.tabs-striped.tabs-color-light .tab-item {
+    color: #27bfc4 !important;
+}
+
+.tabs-top.tabs-striped .tab-item.tab-item-active {
+    border-color: #27bfc4 !important;
+    border-width: 0 0 3px 0 !important;
+}
+
+.tabs-striped.tabs-color-light .tab-item[icon-on=ion-ios-people] {
+    color: #4d2885 !important;
+}
+
+
+.tabs-top.tabs-striped .tab-item.tab-item-active[icon-on=ion-ios-people] {
+    border-color: #4d2885 !important;
+}
+
+
+.tabs-striped.tabs-color-light .tab-item[icon-on=ion-ios-location] {
+    color: #c26228 !important;
+}
+
+.tabs-top.tabs-striped .tab-item.tab-item-active[icon-on=ion-ios-location] {
+    border-color: #c26228 !important;
+}
+
+.your-location {
+    color: #27bfc4;
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
+.sign-up{
+    text-align: center;
+    font-size: 12px;
+    color: #27bfc4;
+}
+
+h1, h2, h3, h4 {
+    text-transform: uppercase;
+}
+
+.slider {
+    border: 1px solid gray;
+    height: 70px;
+}
+
+.bar-footer {
+    padding: 0;
+}
+
+.card button.button-full {
+    margin: 0;
+}
+
+.bar-footer button.button-full {
+    margin: 0;
+    font-size: 16px;
+}
+
+.convo-header {
+    padding-right: 0;
+}
+
+.convo-header button {
+    float: right;
+    margin: -8px 0 -8px 5px;
+    height: 37px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.convo-meta {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.convo-messages {
+    padding: 11px;
+}
+
+.equip-message {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 28px;
+    padding-top: 6px;
+    padding-left: 3px;
+    text-align: center;
+
+    background: #eee;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    margin: 5px;
+}
+
+.equip-message__info {
+    display: none;
+}
+
+.peopleneeded {
+    overflow: hidden;
+}
+
+.peopleneeded label {
+    position: relative;
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.peopleneeded .radio-content {
+    height: 40px;
+}
+
+.peopleneeded .radio-icon {
+    background: #33BDC1;
+    opacity: .5;
+    color: rgba(0, 0, 0, 0);
+}
+
+.peopleneeded .item-content {
+    padding: 6px 0 0;
+    text-align: center;
+}

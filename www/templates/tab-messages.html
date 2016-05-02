@@ -1,12 +1,69 @@
-<ion-view view-title="Messages">
+<ion-view view-title="">
   <ion-content>
-    <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="message in messages" type="item-text-wrap" href="#/tab/messages/{{message.id}}">
-        <img ng-src="{{message.face}}">
-        <h2>{{message.name}}</h2>
-        <p>{{message.lastText}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-      </ion-item>
-    </ion-list>
+    <div class="padding your-location" ng-click="askForLocation();">
+      Your location: <strong>{{lastLocation.attributes.name}}</strong>
+      <i class="icon ion-pinpoint" style="color: #000; margin-left: 5px;"></i>
+    </div>
+
+    <div class="card" ng-repeat="convo in conversations" ng-style="{ 'opacity': convo.conversation.attributes.peopleNeeded && convo.pinned >= convo.conversation.attributes.peopleNeeded ? '.3' : '1' }">
+      <div class="item item-divider convo-header">
+        <span ng-show="convo.conversation.attributes.toGroup">
+          <i class="icon ion-ios-people"></i> {{ convo.conversation.attributes.toGroup.attributes.name }}
+        </span>
+        <span ng-show="convo.conversation.attributes.toLocation">
+          <i class="icon ion-location"></i> {{ convo.conversation.attributes.toLocation.attributes.name }}
+        </span>
+        <span ng-show="convo.conversation.attributes.toLocation === undefined && convo.conversation.attributes.toGroup === undefined">
+          ALL
+        </span>
+
+        <button class="button button-small button-positive" ng-mouseup="stopReply(convo.conversation)" ng-mousedown="startReply(convo.conversation)">
+          <i class="icon ion-mic-a"></i> Reply
+        </button>
+
+        <button class="button button-small button-positive" ng-show="convo.conversation.attributes.peopleNeeded && !convo.pinned" ng-click="pinToConversation(convo.conversation)">
+          Accept
+        </button>
+      </div>
+
+      <div class="item item-text-wrap convo-meta">
+        <span style="font-weight: bold; text-transform: uppercase;">{{ convo.conversation.attributes.startedBy.attributes.username }}</span>
+        <span style="text-transform: uppercase;">
+          ({{ convo.conversation.attributes.createdAt | date : "HH:mm:ss" }},
+        </span>
+        <i class="icon ion-location"></i>
+        <span style="text-transform: uppercase;">{{ convo.conversation.attributes.fromLocation.attributes.name }})</span>
+
+        <span style="position: relative; float: right; font-weight: bold;" ng-show="convo.conversation.attributes.peopleNeeded">
+          {{ convo.pinned }}/{{ convo.conversation.attributes.peopleNeeded }} <i class="icon ion-pin"></i>
+        </span>
+      </div>
+
+      <div class="item item-text-wrap convo-messages">
+        <div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read ? '' : '#33BDC1' }">
+        <!--div class="equip-message" ng-repeat="message in convo.messages" ng-style="{ 'color' : message.read || (convo.conversation.attributes.peopleNeeded && convo.pinned) ? '' : '#33BDC1' }"-->
+          <i class="icon ion-play" ng-click="playMessage(message)" ng-show="!message.attributes.pinned && !message.isPlaying"></i>
+          <i class="icon ion-pause" ng-click="stopPlayMessage(message)" ng-show="!message.attributes.pinned && message.isPlaying"></i>
+          <i class="icon ion-pin" style="color: #007700;" ng-click="playMessage(message)" ng-show="message.attributes.pinned"></i>
+          <!--div class="equip-message__info">
+            @<span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromUser.attributes.username }}</span>
+            /
+            <i class="icon icon-location"></i>
+            <span style="font-weight: bold; text-transform: uppercase;">{{ message.attributes.fromLocation.attributes.name }}</span>
+            /
+            <span style="font-weight: bold; text-transform: uppercase;">
+              {{ message.attributes.createdAt.getUTCHours() + ":" + message.attributes.createdAt.getUTCMinutes(); }}
+            </span>
+          </div-->
+          <span style="font-size:8px; text-transform:uppercase;">{{message.attributes.fromUser.attributes.username}}</span>
+        </div>
+      </div>
+    </div>
   </ion-content>
+
+  <ion-footer-bar ng-show="!newCoversationInProgress">
+    <button class="button button-full button-positive" ng-mouseup="stopConversation()" ng-mousedown="startConversation()">
+      <i class="icon ion-mic-a"></i> Start new conversation
+    </button>
+  </ion-footer-bar>
 </ion-view>

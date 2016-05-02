@@ -1,10 +1,25 @@
-<ion-view view-title="Groups">
+<ion-view view-title="">
   <ion-content>
-    <ion-list>
-      <ion-item class="item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
-        <h2>{{group.name}}</h2>
+
+      <ion-toggle ng-repeat="group in groups" ng-checked="group.followed" ng-click="follow(group)" style="background: #C9BEDA; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
+        {{group.attributes.name}} ({{group.number}})
+      </ion-toggle>
+      <!--ion-item class="item-remove-animate item-icon-right" ng-repeat="group in groups" type="item-text-wrap" href="#/tab/groups/{{group.id}}">
         <i class="icon ion-chevron-right icon-accessory"></i>
-      </ion-item>
-    </ion-list>
+
+        <ion-option-button class="button-assertive" ng-click="remove(group)">
+          Delete
+        </ion-option-button>
+      </ion-item-->
+
+      <form name="form" ng-model="form">
+        <ion-item class="item-input-inset">
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Name" name="groupName" ng-model="groupName">
+          </label>
+          <button class="button button-small button-positive icon ion-plus" ng-click="addGroup(form)">
+          </button>
+        </ion-item>
+      </form>
   </ion-content>
 </ion-view>

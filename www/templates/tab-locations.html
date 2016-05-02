@@ -1,13 +1,27 @@
-<ion-view view-title="Locations">
+<ion-view view-title="">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate" ng-repeat="location in locations" type="item-text-wrap">
-        <h2>{{location.name}}</h2>
+      <ion-item ng-repeat="location in locations" style="background: #EDD0BE; margin: 5px 10px; text-transform: uppercase; font-weight: bold;">
+        {{location.attributes.name}} ({{location.number}})
+      </ion-item>
+      <!--ion-item class="item-remove-animate item-icon-right" ng-repeat="location in locations" type="item-text-wrap"href="#/tab/locations/{{location.id}}">
+        <h2>{{location.attributes.name}}</h2>
+        <i class="icon ion-chevron-right icon-accessory"></i>
 
         <ion-option-button class="button-assertive" ng-click="remove(location)">
           Delete
         </ion-option-button>
-      </ion-item>
+      </ion-item-->
+
+      <form name="form" ng-model="form">
+        <ion-item class="item-input-inset">
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Name" name="locationName" ng-model="locationName">
+          </label>
+          <button class="button button-small button-positive icon ion-plus" ng-click="addLocation(form)">
+          </button>
+        </ion-item>
+      </form>
     </ion-list>
   </ion-content>
 </ion-view>

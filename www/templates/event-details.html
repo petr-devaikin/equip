@@ -1,0 +1,43 @@
+<ion-view view-title="New Event">
+  <ion-content class="padding">
+    <div class="list">
+      <div class="item item-divider">
+        Event Information
+      </div>
+      <label class="item item-input">
+        <span class="input-label">Name</span>
+        <input type="text">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">First Date</span>
+        <input type="text" placeholder="dd/mm/yyyy">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Last Date</span>
+        <input type="text" placeholder="dd/mm/yyyy">
+      </label>
+
+      <div class="item item-divider">
+        Crew
+      </div>
+
+      <div class="item" ng-repeat="user in people" type="item-text-wrap" href="#/tab/people/{{user.id}}">
+        <h2>{{user.attributes.username}}</h2>
+      </div>
+
+      <form name="form" ng-model="form">
+        <div class="item item-input-inset">
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Phone or Email" name="phoneEmail" ng-model="phoneEmail">
+          </label>
+          <button class="button button-small button-positive icon ion-plus" ng-click="addUser(form)">
+          </button>
+        </div>
+      </form>
+    </list>
+
+    <a class="button button-block button-positive" href="#/tab/messages">
+      Go!
+    </a>
+  </ion-content>
+</ion-view>

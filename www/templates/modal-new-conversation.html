@@ -1,0 +1,43 @@
+<ion-modal-view>
+  <ion-content class="padding">
+    <h1>New Conversation</h1>
+
+    <div class="card">
+      <div class="item item-text-wrap">
+        Message info here
+      </div>
+    </div>
+
+    <label class="item item-input item-select">
+      <div class="input-label">
+        I'm currently at
+      </div>
+      <select ng-options="loc as loc.attributes.name for loc in locations" ng-model="newConvoParams.newLocation" ng-selected="selected">
+      </select>
+    </label>
+
+    <br />
+    <h4>People Needed</h4>
+    <div class="peopleneeded">
+      <ion-list>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="0">0</ion-radio>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="1">1</ion-radio>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="2">2</ion-radio>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="3">3</ion-radio>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="4">4</ion-radio>
+        <ion-radio ng-model="newConvoParams.peopleNeeded" ng-value="5">All</ion-radio>
+      </ion-list>
+    </div>
+
+    <br />
+    <h4>Send message to</h4>
+
+    <button class="button button-full button-positive button-left" ng-repeat="dest in destinations" ng-click="sendConversation(dest);" ng-class="!dest.featured ? 'button-outline' : '' ">
+      <i class="icon ion-ios-people" ng-show="dest.entity.className == 'Group'"></i>
+      <i class="icon ion-location" ng-show="dest.entity.className == 'Location'"></i>
+      {{ dest.name }}
+    </button>
+
+    <br/>
+  </ion-content>
+</ion-modal-view>

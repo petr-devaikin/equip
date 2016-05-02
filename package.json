@@ -20,10 +20,28 @@
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    "ionic-plugin-keyboard",
+    "org.apache.cordova.media",
+    "org.apache.cordova.device",
+    {
+      "locator": "https://github.com/hazemhagrass/phonegap-base64.git",
+      "id": "com-badrit-base64"
+    },
+    {
+      "locator": "https://github.com/phonegap-build/PushPlugin.git",
+      "id": "com.phonegap.plugins.PushPlugin"
+    },
+    {
+      "variables": {
+        "APP_ID": "KAsvKDYrevg6q5aOPyNhKX0wHuMbN34tmgyl7gAD",
+        "CLIENT_KEY": "ldTDKmu37Z2maChsqkSCffKzATqQbD5u3Jq48ZI7"
+      },
+      "locator": "https://github.com/grrrian/phonegap-parse-plugin",
+      "id": "com.parse.cordova.core.pushplugin"
+    }
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
+    "android",
+    "ios"
   ]
 }
