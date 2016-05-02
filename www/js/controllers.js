@@ -155,7 +155,8 @@ angular.module('starter.controllers', [])
           }
         }
 
-        rawConversations[key].lastMessageDate = rawConversations[key].messages[0].attributes.createdAt;
+        if (rawConversations[key].messages.length > 0)
+          rawConversations[key].lastMessageDate = rawConversations[key].messages[0].attributes.createdAt;
 
         data.push(rawConversations[key]);
       }
